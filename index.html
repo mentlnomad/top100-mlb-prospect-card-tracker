@@ -310,6 +310,149 @@
         ::-webkit-scrollbar-track { background: var(--bg-card); }
         ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* ═══ Search Builder Widget ═══ */
+        .search-builder {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .sb-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 20px; cursor: pointer; user-select: none;
+            background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02));
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s ease;
+        }
+        .sb-header:hover { background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(249,115,22,0.04)); }
+        .sb-header-left { display: flex; align-items: center; gap: 10px; }
+        .sb-icon { font-size: 1.2rem; }
+        .sb-title { font-weight: 700; font-size: 1.05rem; color: var(--text-light); }
+        .sb-subtitle { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; margin-left: 8px; }
+        .sb-toggle { font-size: 1.2rem; color: var(--text-muted); transition: transform 0.3s ease; }
+        .sb-toggle.open { transform: rotate(180deg); }
+
+        .sb-body { display: none; padding: 20px; }
+        .sb-body.open { display: block; }
+
+        .sb-row {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px; margin-bottom: 16px;
+        }
+        .sb-row-wide {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 14px; margin-bottom: 16px;
+        }
+        .sb-field { display: flex; flex-direction: column; gap: 4px; }
+        .sb-label {
+            font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px; color: var(--text-muted);
+        }
+        .sb-field input, .sb-field select {
+            padding: 10px 12px; background-color: var(--bg-card-inner);
+            border: 1px solid var(--border-color); border-radius: 6px;
+            color: var(--text-light); font-size: 0.88rem;
+            transition: border-color 0.2s ease;
+        }
+        .sb-field input:focus, .sb-field select:focus {
+            outline: none; border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
+        }
+        .sb-field select {
+            cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23f97316' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px;
+        }
+        .sb-checks {
+            display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+            padding: 10px 0;
+        }
+        .sb-check {
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+            font-size: 0.88rem; color: var(--text-light);
+        }
+        .sb-check input[type="checkbox"] {
+            width: 18px; height: 18px; accent-color: var(--accent-orange);
+            cursor: pointer;
+        }
+
+        .sb-actions {
+            display: flex; gap: 12px; align-items: center;
+            padding-top: 16px; border-top: 1px solid var(--border-color);
+        }
+        .sb-search-btn {
+            flex: 1; padding: 14px 24px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-dark));
+            color: white; border: none; border-radius: 6px;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: all 0.2s ease; text-align: center;
+        }
+        .sb-search-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(249,115,22,0.35); }
+        .sb-search-btn:active { transform: translateY(0); }
+        .sb-clear-btn {
+            padding: 14px 20px; background: transparent;
+            border: 1px solid var(--border-color); border-radius: 6px;
+            color: var(--text-muted); font-weight: 600; font-size: 0.88rem;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .sb-clear-btn:hover { border-color: var(--text-muted); color: var(--text-light); }
+
+        .sb-preview {
+            margin-top: 14px; padding: 12px 14px;
+            background-color: var(--bg-card-inner); border-radius: 6px;
+            border: 1px dashed var(--border-color);
+            font-size: 0.8rem; color: var(--text-muted);
+            word-break: break-all; line-height: 1.5;
+        }
+        .sb-preview-label { font-weight: 700; color: var(--accent-orange); margin-right: 6px; }
+        .sb-preview-query { color: var(--text-light); font-weight: 500; }
+
+        /* Combobox + Autocomplete */
+        .sb-combo {
+            display: flex; position: relative;
+        }
+        .sb-combo input {
+            flex: 1; border-radius: 6px 0 0 6px !important;
+        }
+        .sb-combo-toggle {
+            width: 40px; display: flex; align-items: center; justify-content: center;
+            background-color: var(--bg-card-inner); border: 1px solid var(--border-color);
+            border-left: none; border-radius: 0 6px 6px 0; cursor: pointer;
+            color: var(--accent-orange); font-size: 0.7rem; transition: all 0.2s ease;
+            padding: 0;
+        }
+        .sb-combo-toggle:hover { background-color: rgba(249,115,22,0.1); }
+        .sb-combo-toggle.open { background-color: rgba(249,115,22,0.15); }
+        .sb-autocomplete {
+            position: relative;
+        }
+        .sb-suggestions {
+            position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+            background-color: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 0 0 6px 6px; max-height: 320px; overflow-y: auto;
+            display: none;
+        }
+        .sb-suggestions.visible { display: block; }
+        .sb-suggestion {
+            padding: 8px 12px; cursor: pointer; font-size: 0.88rem;
+            color: var(--text-light); transition: background 0.1s ease;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .sb-suggestion:hover { background-color: rgba(249,115,22,0.1); }
+        .sb-suggestion-team { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
+        @media (max-width: 768px) {
+            .sb-row { grid-template-columns: 1fr 1fr; }
+            .sb-row-wide { grid-template-columns: 1fr; }
+            .sb-subtitle { display: none; }
+        }
+        @media (max-width: 480px) {
+            .sb-row { grid-template-columns: 1fr; }
+            .sb-actions { flex-direction: column; }
+            .sb-search-btn, .sb-clear-btn { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -358,6 +501,165 @@
                 <div class="stat-label">Top Parallel</div>
                 <div class="stat-value" id="topParallel" style="font-size:1.1rem;">&mdash;</div>
                 <div class="stat-detail" id="topParallelDetail"></div>
+            </div>
+        </div>
+
+        <!-- eBay Search Builder Widget -->
+        <div class="search-builder" id="searchBuilder">
+            <div class="sb-header" id="sbToggleHeader">
+                <div class="sb-header-left">
+                    <span class="sb-icon">&#x1F50D;</span>
+                    <span class="sb-title">Custom Card Search</span>
+                    <span class="sb-subtitle">Build a targeted eBay search with filters</span>
+                </div>
+                <span class="sb-toggle open" id="sbToggleIcon">&#x25BC;</span>
+            </div>
+            <div class="sb-body open" id="sbBody">
+
+                <!-- Row 1: Player + Year -->
+                <div class="sb-row-wide">
+                    <div class="sb-field sb-autocomplete">
+                        <span class="sb-label">Player Name</span>
+                        <div class="sb-combo">
+                            <input type="text" id="sbPlayer" placeholder="Type or select a prospect..." autocomplete="off">
+                            <button type="button" class="sb-combo-toggle" id="sbComboToggle" title="Show all prospects">&#x25BC;</button>
+                        </div>
+                        <div class="sb-suggestions" id="sbSuggestions"></div>
+                    </div>
+                    <div class="sb-field">
+                        <span class="sb-label">Year</span>
+                        <select id="sbYear">
+                            <option value="">Any Year</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row 2: Product + Parallel -->
+                <div class="sb-row">
+                    <div class="sb-field">
+                        <span class="sb-label">Product</span>
+                        <select id="sbProduct">
+                            <option value="">Any Product</option>
+                            <optgroup label="Bowman">
+                                <option value="Bowman">Bowman</option>
+                                <option value="Bowman Chrome">Bowman Chrome</option>
+                                <option value="Bowman Draft">Bowman Draft</option>
+                                <option value="Bowman Sapphire">Bowman Sapphire</option>
+                                <option value="Bowman Sterling">Bowman Sterling</option>
+                            </optgroup>
+                            <optgroup label="Pro Debut">
+                                <option value="Pro Debut">Topps Pro Debut</option>
+                                <option value="Chrome Pro Debut">Chrome Pro Debut</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="sb-field">
+                        <span class="sb-label">Parallel / Refractor</span>
+                        <select id="sbParallel">
+                            <option value="">Any Parallel</option>
+                            <optgroup label="Standard Refractors">
+                                <option value="Refractor">Refractor</option>
+                                <option value="Sky Blue Refractor">Sky Blue /499</option>
+                                <option value="Purple Refractor">Purple /250</option>
+                                <option value="Blue Refractor">Blue /150</option>
+                                <option value="Green Refractor">Green /99</option>
+                                <option value="Gold Refractor">Gold /50</option>
+                                <option value="Orange Refractor">Orange /25</option>
+                                <option value="Red Refractor">Red /5</option>
+                                <option value="Superfractor">Superfractor 1/1</option>
+                            </optgroup>
+                            <optgroup label="Pattern Refractors">
+                                <option value="Speckle">Speckle</option>
+                                <option value="Shimmer">Shimmer</option>
+                                <option value="Wave">Wave</option>
+                                <option value="Lava">Lava</option>
+                                <option value="Mojo">Mojo</option>
+                                <option value="Atomic">Atomic</option>
+                                <option value="Mini Diamond">Mini Diamond</option>
+                                <option value="RayWave">RayWave</option>
+                            </optgroup>
+                            <optgroup label="Premium">
+                                <option value="Sapphire">Sapphire</option>
+                                <option value="Canary Diamond">Canary Diamond</option>
+                                <option value="Rose Gold">Rose Gold</option>
+                                <option value="Lunar">Lunar</option>
+                                <option value="Independence Day">Independence Day</option>
+                            </optgroup>
+                            <optgroup label="Printing Plates">
+                                <option value="Printing Plate">Any Plate</option>
+                                <option value="Cyan Plate">Cyan Plate</option>
+                                <option value="Magenta Plate">Magenta Plate</option>
+                                <option value="Yellow Plate">Yellow Plate</option>
+                                <option value="Black Plate">Black Plate</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="sb-field">
+                        <span class="sb-label">Grading</span>
+                        <select id="sbGrade">
+                            <option value="">Any Condition</option>
+                            <optgroup label="Raw">
+                                <option value="raw -psa -bgs -sgc -cgc -graded -slab">Raw / Ungraded</option>
+                            </optgroup>
+                            <optgroup label="PSA">
+                                <option value="PSA 10">PSA 10</option>
+                                <option value="PSA 9">PSA 9</option>
+                                <option value="PSA">Any PSA</option>
+                            </optgroup>
+                            <optgroup label="BGS / Beckett">
+                                <option value="BGS 10">BGS 10 (Pristine)</option>
+                                <option value="BGS 9.5">BGS 9.5 (Gem Mint)</option>
+                                <option value="BGS">Any BGS</option>
+                            </optgroup>
+                            <optgroup label="SGC">
+                                <option value="SGC 10">SGC 10</option>
+                                <option value="SGC 9.5">SGC 9.5</option>
+                                <option value="SGC">Any SGC</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="sb-field">
+                        <span class="sb-label">Serial Numbered</span>
+                        <select id="sbSerial">
+                            <option value="">Any</option>
+                            <option value="/499">/499 or less</option>
+                            <option value="/250">/250 or less</option>
+                            <option value="/150">/150 or less</option>
+                            <option value="/99">/99 or less</option>
+                            <option value="/50">/50 or less</option>
+                            <option value="/25">/25 or less</option>
+                            <option value="/10">/10 or less</option>
+                            <option value="/5">/5 or less</option>
+                            <option value="1/1">1/1</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row 3: Checkboxes -->
+                <div class="sb-checks">
+                    <label class="sb-check"><input type="checkbox" id="sbAuto" checked> Autograph</label>
+                    <label class="sb-check"><input type="checkbox" id="sb1stBowman"> 1st Bowman</label>
+                    <label class="sb-check"><input type="checkbox" id="sbChrome"> Chrome Only</label>
+                    <label class="sb-check"><input type="checkbox" id="sbSP"> SP / SSP</label>
+                </div>
+
+                <!-- Search preview -->
+                <div class="sb-preview" id="sbPreview">
+                    <span class="sb-preview-label">Search Preview:</span>
+                    <span class="sb-preview-query" id="sbPreviewQuery">auto</span>
+                </div>
+
+                <!-- Actions -->
+                <div class="sb-actions">
+                    <button class="sb-search-btn" id="sbSearchBtn">Search eBay</button>
+                    <button class="sb-clear-btn" id="sbClearBtn">Clear All</button>
+                </div>
             </div>
         </div>
 
@@ -412,7 +714,7 @@
                         <th class="sortable" data-sort="team">Team</th>
                         <th class="sortable" data-sort="rawPrice">Avg Raw</th>
                         <th class="sortable" data-sort="gradedPrice">Avg Graded</th>
-                        <th class="sortable" data-sort="pdPrice">Pro Debut</th>
+                        <th class="sortable" data-sort="pdPrice">Bowman 1st Yr</th>
                         <th class="sortable" data-sort="soldPrice">Avg Sold</th>
                         <th class="sortable" data-sort="listings">Listings</th>
                         <th class="sortable" data-sort="trend">Trend</th>
@@ -1049,10 +1351,194 @@
         }
 
         // ═══════════════════════════════════════════════════════
+        // SEARCH BUILDER WIDGET
+        // ═══════════════════════════════════════════════════════
+        const SearchBuilder = {
+            els: {},
+
+            init() {
+                this.els = {
+                    header: document.getElementById('sbToggleHeader'),
+                    body: document.getElementById('sbBody'),
+                    icon: document.getElementById('sbToggleIcon'),
+                    player: document.getElementById('sbPlayer'),
+                    comboToggle: document.getElementById('sbComboToggle'),
+                    suggestions: document.getElementById('sbSuggestions'),
+                    year: document.getElementById('sbYear'),
+                    product: document.getElementById('sbProduct'),
+                    parallel: document.getElementById('sbParallel'),
+                    grade: document.getElementById('sbGrade'),
+                    serial: document.getElementById('sbSerial'),
+                    auto: document.getElementById('sbAuto'),
+                    firstBowman: document.getElementById('sb1stBowman'),
+                    chrome: document.getElementById('sbChrome'),
+                    sp: document.getElementById('sbSP'),
+                    preview: document.getElementById('sbPreviewQuery'),
+                    searchBtn: document.getElementById('sbSearchBtn'),
+                    clearBtn: document.getElementById('sbClearBtn'),
+                };
+
+                // Toggle panel
+                this.els.header.addEventListener('click', () => {
+                    this.els.body.classList.toggle('open');
+                    this.els.icon.classList.toggle('open');
+                });
+
+                // Live preview on every input change
+                const updatePreview = () => this.updatePreview();
+                ['year', 'product', 'parallel', 'grade', 'serial'].forEach(id => {
+                    this.els[id].addEventListener('change', updatePreview);
+                });
+                this.els.player.addEventListener('input', () => { updatePreview(); this.showSuggestions(); });
+                ['auto', 'firstBowman', 'chrome', 'sp'].forEach(id => {
+                    this.els[id].addEventListener('change', updatePreview);
+                });
+
+                // Autocomplete — typing filters the list
+                this.els.player.addEventListener('focus', () => this.showSuggestions());
+
+                // Combo dropdown toggle — shows all 100 prospects
+                this.els.comboToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isOpen = this.els.suggestions.classList.contains('visible');
+                    if (isOpen) {
+                        this.els.suggestions.classList.remove('visible');
+                        this.els.comboToggle.classList.remove('open');
+                    } else {
+                        this.showAllProspects();
+                        this.els.comboToggle.classList.add('open');
+                    }
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.sb-autocomplete')) {
+                        this.els.suggestions.classList.remove('visible');
+                        this.els.comboToggle.classList.remove('open');
+                    }
+                });
+
+                // Search button
+                this.els.searchBtn.addEventListener('click', () => this.doSearch());
+
+                // Clear button
+                this.els.clearBtn.addEventListener('click', () => this.clearAll());
+
+                // Enter key on player input
+                this.els.player.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { this.els.suggestions.classList.remove('visible'); this.doSearch(); }
+                });
+
+                this.updatePreview();
+            },
+
+            buildQuery() {
+                const parts = [];
+                const player = this.els.player.value.trim();
+                const year = this.els.year.value;
+                const product = this.els.product.value;
+                const parallel = this.els.parallel.value;
+                const grade = this.els.grade.value;
+                const serial = this.els.serial.value;
+                const isAuto = this.els.auto.checked;
+                const is1st = this.els.firstBowman.checked;
+                const isChrome = this.els.chrome.checked;
+                const isSP = this.els.sp.checked;
+
+                if (year) parts.push(year);
+                if (product) parts.push(product);
+                if (player) parts.push(player);
+                if (is1st) parts.push('1st Bowman');
+                if (isChrome && !product.toLowerCase().includes('chrome')) parts.push('Chrome');
+                if (isAuto) parts.push('auto');
+                if (parallel) parts.push(parallel);
+                if (serial) parts.push(serial);
+                if (isSP) parts.push('SP');
+                if (grade) parts.push(grade);
+
+                return parts.join(' ') || 'Bowman auto';
+            },
+
+            updatePreview() {
+                this.els.preview.textContent = this.buildQuery();
+            },
+
+            doSearch() {
+                const query = this.buildQuery();
+                const url = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(query)
+                    + '&_sacat=261328'
+                    + '&mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=' + CAMPAIGN_ID
+                    + '&toolid=10001&mkevt=1';
+                window.open(url, '_blank');
+            },
+
+            clearAll() {
+                this.els.player.value = '';
+                this.els.year.value = '';
+                this.els.product.value = '';
+                this.els.parallel.value = '';
+                this.els.grade.value = '';
+                this.els.serial.value = '';
+                this.els.auto.checked = true;
+                this.els.firstBowman.checked = false;
+                this.els.chrome.checked = false;
+                this.els.sp.checked = false;
+                this.els.suggestions.classList.remove('visible');
+                this.updatePreview();
+            },
+
+            showSuggestions() {
+                const val = this.els.player.value.toLowerCase().trim();
+                const box = this.els.suggestions;
+                box.innerHTML = '';
+
+                if (val.length < 1) {
+                    box.classList.remove('visible');
+                    this.els.comboToggle.classList.remove('open');
+                    return;
+                }
+
+                const matches = prospectsData.filter(p => p.name.toLowerCase().includes(val)).slice(0, 10);
+                if (matches.length === 0) {
+                    box.classList.remove('visible');
+                    this.els.comboToggle.classList.remove('open');
+                    return;
+                }
+
+                this._renderSuggestions(matches);
+                box.classList.add('visible');
+            },
+
+            showAllProspects() {
+                const box = this.els.suggestions;
+                box.innerHTML = '';
+                this._renderSuggestions(prospectsData);
+                box.classList.add('visible');
+            },
+
+            _renderSuggestions(list) {
+                const box = this.els.suggestions;
+                list.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = 'sb-suggestion';
+                    div.innerHTML = `<span>#${p.rank} ${p.name}</span><span class="sb-suggestion-team">${p.team} &middot; ${p.position}</span>`;
+                    div.addEventListener('click', () => {
+                        this.els.player.value = p.name;
+                        box.classList.remove('visible');
+                        this.els.comboToggle.classList.remove('open');
+                        this.updatePreview();
+                    });
+                    box.appendChild(div);
+                });
+            }
+        };
+
+        // ═══════════════════════════════════════════════════════
         // INIT
         // ═══════════════════════════════════════════════════════
         document.addEventListener('DOMContentLoaded', () => {
             ThemeManager.init();
+            SearchBuilder.init();
             renderTable();
             renderDetailedCards();
 
