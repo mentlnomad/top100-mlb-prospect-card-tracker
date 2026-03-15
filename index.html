@@ -41,6 +41,7 @@
             --amber: #f59e0b;            /* amber-500 */
             --amber-bg: rgba(245,158,11,0.1);
             --stripe: rgba(255,255,255,0.02);
+            --input-fill: #18181b;
             /* Shared geometry */
             --radius: 0.5rem;
             --radius-lg: 0.75rem;
@@ -66,6 +67,7 @@
             --blue-bg: rgba(59,130,246,0.08);
             --amber-bg: rgba(245,158,11,0.08);
             --stripe: rgba(0,0,0,0.025);
+            --input-fill: #ffffff;
         }
 
         body {
@@ -147,6 +149,9 @@
             display: grid; grid-template-columns: 1fr 200px;
             gap: 12px; margin-bottom: 16px; align-items: center;
         }
+        .controls input[type="text"], .controls select {
+            background-color: var(--input-fill);
+        }
 
         /* ═══ Table ═══ */
         .table-wrapper {
@@ -205,6 +210,15 @@
             font-size: 0.8125rem; cursor: pointer; transition: all 0.15s; height: 36px;
         }
         .btn-outline:hover { background-color: var(--accent); color: var(--foreground); border-color: var(--muted-fg); }
+        .btn-slate {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 8px 16px; background-color: #475569; color: #fff;
+            border: none; border-radius: var(--radius); font-weight: 600; font-size: 0.8125rem;
+            cursor: pointer; transition: background-color 0.15s, transform 0.1s;
+            text-decoration: none; white-space: nowrap; height: 36px;
+        }
+        .btn-slate:hover { background-color: #334155; }
+        .btn-slate:active { transform: scale(0.98); }
         .btn-lg { height: 44px; padding: 10px 24px; font-size: 0.875rem; }
 
         .shop-btn { padding: 5px 10px; height: 28px; font-size: 0.75rem; }
@@ -741,7 +755,7 @@
                 </div>
 
                 <div class="show-all-container" id="tableShowAllContainer" style="display:none;">
-                    <button class="btn-primary btn-lg" id="tableShowAllBtn">Show All 100 Prospects</button>
+                    <button class="btn-slate btn-lg" id="tableShowAllBtn">Show All 100 Prospects</button>
                 </div>
             </div>
         </div>
@@ -751,7 +765,7 @@
             <h2 class="breakdowns-title">Detailed Card Breakdowns</h2>
             <div class="cards-grid" id="cardsGrid"></div>
             <div class="show-all-container" id="cardsShowAllContainer" style="display:none;">
-                <button class="btn-primary btn-lg" id="cardsShowAllBtn">Show All 100 Prospects</button>
+                <button class="btn-slate btn-lg" id="cardsShowAllBtn">Show All 100 Prospects</button>
             </div>
         </div>
     </div>
@@ -965,7 +979,7 @@
                 return;
             }
 
-            const display = showAllTable || filteredProspects.length <= 25 ? filteredProspects : filteredProspects.slice(0, 25);
+            const display = showAllTable || filteredProspects.length <= 24 ? filteredProspects : filteredProspects.slice(0, 24);
 
             display.forEach(p => {
                 const d = allProspectData[p.key] || {};
@@ -996,8 +1010,8 @@
         function updateShowAllButton() {
             const c = document.getElementById('tableShowAllContainer');
             const b = document.getElementById('tableShowAllBtn');
-            if (filteredProspects.length > 25 && !showAllTable) { c.style.display = 'block'; b.textContent = 'Show All 100 Prospects'; }
-            else if (filteredProspects.length > 25 && showAllTable) { c.style.display = 'block'; b.textContent = 'Show Top 25'; }
+            if (filteredProspects.length > 24 && !showAllTable) { c.style.display = 'block'; b.textContent = 'Show All 100 Prospects'; }
+            else if (filteredProspects.length > 24 && showAllTable) { c.style.display = 'block'; b.textContent = 'Show Top 24'; }
             else { c.style.display = 'none'; }
         }
 
@@ -1207,7 +1221,7 @@
             grid.innerHTML = '';
 
             let cards = filteredProspects.length > 0 ? filteredProspects : prospectsData;
-            if (!showAllCards && cards.length > 25) cards = cards.slice(0, 25);
+            if (!showAllCards && cards.length > 24) cards = cards.slice(0, 24);
 
             cards.forEach(p => {
                 const d = allProspectData[p.key] || {};
@@ -1318,7 +1332,7 @@
                             ${thumbHTML}
                         </div>
                         <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:12px;">
-                            <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width:100%;text-decoration:none;background-color:${teamColor};color:${teamText};">Shop ${p.name} on eBay</a>
+                            <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width:100%;text-decoration:none;">Shop ${p.name} on eBay</a>
                         </div>
                     </div>
                 `;
@@ -1332,8 +1346,8 @@
             const c = document.getElementById('cardsShowAllContainer');
             const b = document.getElementById('cardsShowAllBtn');
             const count = (filteredProspects.length > 0 ? filteredProspects : prospectsData).length;
-            if (count > 25 && !showAllCards) { c.style.display = 'block'; b.textContent = 'Show All 100 Prospects'; }
-            else if (count > 25 && showAllCards) { c.style.display = 'block'; b.textContent = 'Show Top 25'; }
+            if (count > 24 && !showAllCards) { c.style.display = 'block'; b.textContent = 'Show All 100 Prospects'; }
+            else if (count > 24 && showAllCards) { c.style.display = 'block'; b.textContent = 'Show Top 24'; }
             else { c.style.display = 'none'; }
         }
 
