@@ -199,7 +199,7 @@
         .show-all-container { text-align: center; margin: 20px 0; }
 
         /* ═══ Card Breakdowns ═══ */
-        .detailed-breakdowns { margin-bottom: 28px; }
+        .detailed-breakdowns { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
         .breakdowns-title { font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 700; margin-bottom: 20px; color: var(--foreground); letter-spacing: -0.025em; }
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-bottom: 24px; }
 
@@ -211,7 +211,9 @@
         .card-header {
             background-color: var(--primary); padding: 10px 14px;
             display: flex; justify-content: space-between; align-items: center;
+            text-decoration: none; transition: filter 0.15s;
         }
+        a.card-header:hover { filter: brightness(1.1); }
         .card-name { font-weight: 700; font-size: 0.9375rem; color: var(--primary-fg); }
         .card-pos {
             background-color: rgba(255,255,255,0.2); color: var(--primary-fg); padding: 2px 8px;
@@ -276,6 +278,7 @@
             cursor: pointer; transition: border-color 0.15s; position: relative;
         }
         .thumbnail-item:hover { border-color: var(--primary); }
+        a.thumbnail-item { text-decoration: none; }
         .thumbnail-item img { width: 100%; height: 100%; object-fit: cover; }
         .thumb-badge {
             position: absolute; bottom: 1px; left: 1px; right: 1px;
@@ -408,7 +411,7 @@
             .card-body { padding: 10px; }
             .card-name { font-size: 0.8125rem; }
 
-            .detailed-breakdowns { margin-bottom: 20px; }
+            .detailed-breakdowns { margin-top: 24px; padding-top: 16px; }
         }
 
         /* ═══ RESPONSIVE — Mobile (<=480px) ═══ */
@@ -645,15 +648,6 @@
             </div>
         </div>
 
-        <!-- Detailed Card Breakdowns -->
-        <div class="detailed-breakdowns">
-            <h2 class="breakdowns-title">Detailed Card Breakdowns</h2>
-            <div class="cards-grid" id="cardsGrid"></div>
-            <div class="show-all-container" id="cardsShowAllContainer" style="display:none;">
-                <button class="btn-primary btn-lg" id="cardsShowAllBtn">Show All 100 Prospects</button>
-            </div>
-        </div>
-
         <!-- Controls -->
         <div class="controls">
             <div class="search-container">
@@ -720,6 +714,15 @@
 
         <div class="show-all-container" id="tableShowAllContainer" style="display:none;">
             <button class="btn-primary btn-lg" id="tableShowAllBtn">Show All 100 Prospects</button>
+        </div>
+
+        <!-- Detailed Card Breakdowns -->
+        <div class="detailed-breakdowns">
+            <h2 class="breakdowns-title">Detailed Card Breakdowns</h2>
+            <div class="cards-grid" id="cardsGrid"></div>
+            <div class="show-all-container" id="cardsShowAllContainer" style="display:none;">
+                <button class="btn-primary btn-lg" id="cardsShowAllBtn">Show All 100 Prospects</button>
+            </div>
         </div>
     </div>
 
@@ -1202,7 +1205,8 @@
                             let badge = '';
                             if (item.parsed && item.parsed.gradeCompany) badge = `<div class="thumb-badge graded-badge">${item.parsed.gradeCompany} ${item.parsed.grade || ''}</div>`;
                             else if (item.parsed && item.parsed.isNumbered) badge = `<div class="thumb-badge numbered-badge">/${item.parsed.serial || '?'}</div>`;
-                            thumbHTML += `<div class="thumbnail-item" title="${item.title || ''}"><img src="${item.image}" alt="Card">${badge}</div>`;
+                            const itemUrl = item.url || d.affiliateUrl || getEbayLink(p.name);
+                            thumbHTML += `<a href="${itemUrl}" target="_blank" rel="noopener noreferrer" class="thumbnail-item" title="${(item.title || '').replace(/"/g, '&quot;')}"><img src="${item.image}" alt="Card">${badge}</a>`;
                         }
                     });
                     thumbHTML += '</div>';
@@ -1215,11 +1219,12 @@
                     d.avgGraded ? 'Graded:' + fmt(d.avgGraded) : null
                 ].filter(Boolean).join(' | ');
 
+                const cardLink = d.affiliateUrl || getEbayLink(p.name);
                 card.innerHTML = `
-                    <div class="card-header">
+                    <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="card-header" style="text-decoration:none;">
                         <div class="card-name">${p.name}</div>
                         <span class="card-pos">${p.position}</span>
-                    </div>
+                    </a>
                     <div class="card-team-bar">
                         <span>${p.team} · #${p.rank}</span>
                         <span class="card-live-badge">${liveStr || 'Loading...'}</span>
@@ -1260,6 +1265,9 @@
                         </div>
                         <div class="card-thumbnails">
                             ${thumbHTML}
+                        </div>
+                        <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:12px;">
+                            <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width:100%;text-decoration:none;">Shop ${p.name} on eBay</a>
                         </div>
                     </div>
                 `;
