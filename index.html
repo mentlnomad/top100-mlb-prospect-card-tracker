@@ -335,14 +335,14 @@
         <!-- Market Dashboard -->
         <div class="dashboard">
             <div class="stat-card">
-                <div class="stat-label">Top Raw Avg</div>
-                <div class="stat-value" id="topRawAvg">&mdash;</div>
-                <div class="stat-detail" id="topRawName"></div>
+                <div class="stat-label">Trending Up</div>
+                <div class="stat-value" id="trendingUpName" style="font-size:1.1rem;color:var(--color-green);">&mdash;</div>
+                <div class="stat-detail" id="trendingUpDetail"></div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Top Graded Avg</div>
-                <div class="stat-value" id="topGradedAvg">&mdash;</div>
-                <div class="stat-detail" id="topGradedName"></div>
+                <div class="stat-label">Best Grade & Flip</div>
+                <div class="stat-value" id="gradeFlipName" style="font-size:1.1rem;">&mdash;</div>
+                <div class="stat-detail" id="gradeFlipDetail"></div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Active Listings</div>
@@ -355,7 +355,7 @@
                 <div class="stat-detail" id="mostActiveCount"></div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Top Parallels</div>
+                <div class="stat-label">Top Parallel</div>
                 <div class="stat-value" id="topParallel" style="font-size:1.1rem;">&mdash;</div>
                 <div class="stat-detail" id="topParallelDetail"></div>
             </div>
@@ -587,7 +587,7 @@
                 + '&mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=' + CAMPAIGN_ID + '&toolid=10001&mkevt=1';
         }
 
-        function fmt(num) { return num != null ? '$' + num.toFixed(0) : '\u2014'; }
+        function fmt(num) { return num != null ? '$' + Math.round(num).toLocaleString() : '\u2014'; }
 
         // Parallel color mapping
         const PARALLEL_COLORS = {
@@ -645,7 +645,7 @@
                     <td class="price-graded">${fmt(d.avgGraded)}</td>
                     <td class="price-pd">${fmt(d.pdAvgRaw)}</td>
                     <td class="price-raw">${fmt(d.soldAvg)}</td>
-                    <td style="text-align:center;">${d.totalListings || '\u2014'}</td>
+                    <td style="text-align:center;">${d.totalListings ? d.totalListings.toLocaleString() : '\u2014'}</td>
                     <td class="trend ${trendClass}"><span class="sentiment sentiment-${sent}"></span>${trendText}</td>
                     <td><a href="${d.affiliateUrl || getEbayLink(p.name)}" target="_blank" rel="noopener noreferrer" class="shop-btn">Shop</a></td>
                 `;
@@ -722,33 +722,82 @@
             const all = Object.values(allProspectData);
             if (all.length === 0) return;
 
-            const topRaw = all.reduce((m, p) => (p.avgRaw || 0) > (m.avgRaw || 0) ? p : m, {});
-            const topGraded = all.reduce((m, p) => (p.avgGraded || 0) > (m.avgGraded || 0) ? p : m, {});
+            // ── Active Listings ──
             const total = all.reduce((s, p) => s + (p.totalListings || 0), 0);
+            document.getElementById('activeListing').textContent = total ? total.toLocaleString() : '\u2014';
+
+            // ── Most Active ──
             const most = all.reduce((m, p) => (p.totalListings || 0) > (m.totalListings || 0) ? p : m, {});
-
-            document.getElementById('topRawAvg').textContent = topRaw.avgRaw ? fmt(topRaw.avgRaw) : '\u2014';
-            document.getElementById('topRawName').textContent = topRaw.name || '';
-            document.getElementById('topGradedAvg').textContent = topGraded.avgGraded ? fmt(topGraded.avgGraded) : '\u2014';
-            document.getElementById('topGradedName').textContent = topGraded.name || '';
-            document.getElementById('activeListing').textContent = total || '\u2014';
             document.getElementById('mostActiveName').textContent = most.name || '\u2014';
-            document.getElementById('mostActiveCount').textContent = most.totalListings ? most.totalListings + ' listings' : '';
+            document.getElementById('mostActiveCount').textContent = most.totalListings ? most.totalListings.toLocaleString() + ' listings' : '';
 
-            // Top parallel across all prospects
+            // ── Trending Up ──
+            // Heat score: combination of listing volume, graded premium,
+            // numbered card ratio, and 1st Bowman availability
+            // This surfaces prospects with the most collector interest
+            const withHeat = all.filter(p => p.totalListings > 0).map(p => {
+                const gradePremium = (p.avgRaw && p.avgGraded) ? (p.avgGraded / p.avgRaw) : 0;
+                const numberedRatio = p.totalListings > 0 ? (p.numberedCount || 0) / p.totalListings : 0;
+                const gradeCount = Object.values(p.gradeDist || {}).reduce((s, v) => s + v.count, 0);
+                const gradeRatio = p.totalListings > 0 ? gradeCount / p.totalListings : 0;
+
+                // Heat score formula:
+                // - Listing volume (log scaled so 100 listings isn't 10x better than 10)
+                // - Grading premium (collectors paying up for graded = demand signal)
+                // - Numbered card ratio (high-end parallels being listed = market interest)
+                // - Grade ratio (lots of graded cards = active collector market)
+                const heat = (Math.log2(Math.max(1, p.totalListings)) * 2)
+                           + (gradePremium * 1.5)
+                           + (numberedRatio * 10)
+                           + (gradeRatio * 8)
+                           + ((p.firstBowmanCount || 0) > 0 ? 3 : 0);
+                return { ...p, heat, gradePremium };
+            }).sort((a, b) => b.heat - a.heat);
+
+            const trending = withHeat[0];
+            if (trending) {
+                document.getElementById('trendingUpName').textContent = trending.name;
+                const reasons = [];
+                if (trending.totalListings > 20) reasons.push(trending.totalListings + ' listings');
+                if (trending.gradePremium > 1.5) reasons.push(trending.gradePremium.toFixed(1) + 'x grade premium');
+                if (trending.numberedCount > 0) reasons.push(trending.numberedCount + ' numbered');
+                document.getElementById('trendingUpDetail').textContent = reasons.slice(0, 2).join(' · ') || 'High market activity';
+            }
+
+            // ── Best Grade & Flip ──
+            // Highest raw-to-graded price multiplier — tells collectors
+            // who to buy raw and get graded for the biggest return
+            const gradeFlips = all
+                .filter(p => p.avgRaw && p.avgGraded && p.avgRaw > 5 && p.avgGraded > p.avgRaw)
+                .map(p => ({ ...p, multiplier: p.avgGraded / p.avgRaw }))
+                .sort((a, b) => b.multiplier - a.multiplier);
+
+            const bestFlip = gradeFlips[0];
+            if (bestFlip) {
+                document.getElementById('gradeFlipName').textContent = bestFlip.name;
+                document.getElementById('gradeFlipDetail').textContent =
+                    fmt(bestFlip.avgRaw) + ' raw \u2192 ' + fmt(bestFlip.avgGraded) + ' graded (' + bestFlip.multiplier.toFixed(1) + 'x)';
+            }
+
+            // ── Top Parallel ──
             const globalParallels = {};
             all.forEach(p => {
                 if (p.parallelDist) {
                     Object.entries(p.parallelDist).forEach(([k, v]) => {
                         if (k === 'Base') return;
-                        if (!globalParallels[k]) globalParallels[k] = 0;
-                        globalParallels[k] += v.count;
+                        if (!globalParallels[k]) globalParallels[k] = { count: 0, totalPrice: 0 };
+                        globalParallels[k].count += v.count;
+                        if (v.avgPrice) globalParallels[k].totalPrice += v.avgPrice * v.count;
                     });
                 }
             });
-            const topP = Object.entries(globalParallels).sort((a, b) => b[1] - a[1])[0];
-            document.getElementById('topParallel').textContent = topP ? topP[0] : '\u2014';
-            document.getElementById('topParallelDetail').textContent = topP ? topP[1] + ' listings' : '';
+            const topP = Object.entries(globalParallels).sort((a, b) => b[1].count - a[1].count)[0];
+            if (topP) {
+                const avgP = topP[1].count > 0 ? topP[1].totalPrice / topP[1].count : 0;
+                document.getElementById('topParallel').textContent = topP[0];
+                document.getElementById('topParallelDetail').textContent =
+                    topP[1].count + ' listings' + (avgP > 0 ? ' · avg ' + fmt(avgP) : '');
+            }
         }
 
         // ═══════════════════════════════════════════════════════
