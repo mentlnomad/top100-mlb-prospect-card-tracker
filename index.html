@@ -3,8 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Top 100 MLB Prospect Card Price Tracker - Live eBay Bowman Chrome & Pro Debut Prices with Parallel Breakdown">
-    <title>Top 100 Prospect Card Tracker</title>
+    <meta name="description" content="Prospect Card Radar - Live eBay prices for the Top 100 MLB prospect cards. Bowman Chrome & Pro Debut, Raw vs Graded, Parallel Breakdowns.">
+    <title>Prospect Card Radar</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Prospect Card Radar">
+    <meta property="og:description" content="Live eBay prices for the Top 100 MLB prospect cards. Bowman Chrome & Pro Debut, Raw vs Graded, Parallel Breakdowns.">
+    <meta property="og:image" content="/images/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Prospect Card Radar">
+    <meta name="twitter:description" content="Live eBay prices for the Top 100 MLB prospect cards.">
+    <meta name="twitter:image" content="/images/og-image.png">
     <style>
         /* ═══════════════════════════════════════════════════════
            DESIGN SYSTEM — shadcn/ui + Tailwind CSS tokens
@@ -85,9 +99,12 @@
             margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
             gap: 12px;
         }
-        .header-content { flex: 1; text-align: center; min-width: 0; }
-        h1 { font-size: clamp(1.25rem, 4vw, 2.25rem); font-weight: 700; letter-spacing: -0.025em; color: var(--foreground); line-height: 1.2; }
-        .subtitle { font-size: clamp(0.75rem, 2vw, 0.875rem); color: var(--muted-fg); font-weight: 400; margin-top: 4px; }
+        .header-content { flex: 1; min-width: 0; }
+        .logo-lockup { display: flex; align-items: center; gap: 14px; justify-content: center; }
+        .logo-icon { flex-shrink: 0; }
+        h1 { font-size: clamp(1.25rem, 4vw, 2.25rem); font-weight: 800; letter-spacing: -0.025em; color: var(--foreground); line-height: 1.2; }
+        .brand-accent { color: var(--primary); }
+        .subtitle { font-size: clamp(0.7rem, 1.8vw, 0.85rem); color: var(--muted-fg); font-weight: 400; margin-top: 2px; }
         .theme-toggle {
             padding: 8px 14px; background-color: var(--secondary); border: 1px solid var(--border);
             border-radius: var(--radius); cursor: pointer; font-size: 0.8125rem; color: var(--foreground);
@@ -413,6 +430,7 @@
             .container { padding: 12px; }
             header { flex-direction: column; gap: 10px; align-items: stretch; padding-bottom: 16px; margin-bottom: 16px; }
             .header-content { text-align: center; }
+            .logo-lockup { flex-direction: column; gap: 8px; text-align: center; }
             .theme-toggle { width: 100%; text-align: center; }
 
             .dashboard { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
@@ -488,10 +506,15 @@
     <div class="container">
         <header>
             <div class="header-content">
-                <h1>Top 100 Prospect Card Tracker</h1>
-                <p class="subtitle">Live eBay Bowman Chrome & Pro Debut Prices · Raw vs Graded · Parallel Breakdown</p>
+                <div class="logo-lockup">
+                    <img class="logo-icon" src="/images/logo-icon.svg" alt="Prospect Card Radar" width="52" height="52">
+                    <div>
+                        <h1>Prospect Card <span class="brand-accent">Radar</span></h1>
+                        <p class="subtitle">Live eBay Prices · Top 100 Prospects · Raw vs Graded · Parallel Breakdown</p>
+                    </div>
+                </div>
             </div>
-            <button class="theme-toggle" id="themeToggle">Dark</button><!-- JS overrides on init -->
+            <button class="theme-toggle" id="themeToggle">Dark</button>
         </header>
 
         <!-- Market Dashboard -->
@@ -771,7 +794,7 @@
     </div>
 
     <footer>
-        <p>Data sourced from eBay. <a href="#">Affiliate links</a> earn commission at no extra cost to you. Rankings via MLB Pipeline.</p>
+        <p><strong>Prospect Card Radar</strong> · Data sourced from eBay. <a href="#">Affiliate links</a> earn commission at no extra cost to you. Rankings via MLB Pipeline.</p>
         <p style="margin-top:10px;font-size:0.8rem;">Last updated: <span id="lastUpdated">Just now</span></p>
     </footer>
 
@@ -780,7 +803,7 @@
         // THEME MANAGEMENT
         // ═══════════════════════════════════════════════════════
         const ThemeManager = {
-            STORAGE_KEY: 'prospectTrackerTheme',
+            STORAGE_KEY: 'prospectCardRadarTheme',
             init() {
                 const saved = localStorage.getItem(this.STORAGE_KEY) || 'light';
                 this.setTheme(saved);
