@@ -40,6 +40,7 @@
             --blue-bg: rgba(59,130,246,0.1);
             --amber: #f59e0b;            /* amber-500 */
             --amber-bg: rgba(245,158,11,0.1);
+            --stripe: rgba(255,255,255,0.02);
             /* Shared geometry */
             --radius: 0.5rem;
             --radius-lg: 0.75rem;
@@ -64,6 +65,7 @@
             --purple-bg: rgba(168,85,247,0.08);
             --blue-bg: rgba(59,130,246,0.08);
             --amber-bg: rgba(245,158,11,0.08);
+            --stripe: rgba(0,0,0,0.025);
         }
 
         body {
@@ -127,16 +129,29 @@
             background-repeat: no-repeat; background-position: right 10px center; padding-right: 32px;
         }
 
+        /* ═══ Section Module (shared wrapper) ═══ */
+        .section-module {
+            background-color: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); margin-bottom: 20px; overflow: hidden;
+        }
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px;
+            background-color: var(--muted); border-bottom: 1px solid var(--border);
+        }
+        .section-header-left { display: flex; align-items: center; gap: 8px; }
+        .section-body { padding: 16px; }
+
         /* ═══ Controls ═══ */
         .controls {
             display: grid; grid-template-columns: 1fr 200px;
-            gap: 12px; margin-bottom: 20px; align-items: center;
+            gap: 12px; margin-bottom: 16px; align-items: center;
         }
 
         /* ═══ Table ═══ */
         .table-wrapper {
-            background-color: var(--card); border: 1px solid var(--border);
-            border-radius: var(--radius-lg); overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
         }
         .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
@@ -153,6 +168,7 @@
         th.sort-desc::after { content: " \2193"; opacity: 1; color: var(--primary); }
         td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 0.8125rem; }
         tbody tr { transition: background-color 0.1s; }
+        tbody tr:nth-child(even) { background-color: var(--stripe); }
         tbody tr:hover { background-color: var(--muted); }
         tbody tr:last-child td { border-bottom: none; }
         td.rank { font-weight: 700; color: var(--primary); width: 36px; font-variant-numeric: tabular-nums; }
@@ -209,11 +225,11 @@
         }
         .prospect-card:hover { border-color: var(--primary); box-shadow: 0 4px 16px rgba(249,115,22,0.08); }
         .card-header {
-            background-color: var(--primary); padding: 10px 14px;
+            padding: 10px 14px;
             display: flex; justify-content: space-between; align-items: center;
             text-decoration: none; transition: filter 0.15s;
         }
-        a.card-header:hover { filter: brightness(1.1); }
+        a.card-header:hover { filter: brightness(1.15); }
         .card-name { font-weight: 700; font-size: 0.9375rem; color: var(--primary-fg); }
         .card-pos {
             background-color: rgba(255,255,255,0.2); color: var(--primary-fg); padding: 2px 8px;
@@ -392,7 +408,9 @@
             .stat-value { font-size: 1.125rem; }
             .stat-detail { font-size: 0.6875rem; }
 
-            .controls { grid-template-columns: 1fr; gap: 8px; margin-bottom: 16px; }
+            .controls { grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
+            .section-body { padding: 12px; }
+            .section-header .sb-subtitle { display: none; }
 
             /* Search Builder — 2 columns on tablet */
             .sb-body { padding: 12px; }
@@ -423,6 +441,8 @@
             .stat-value { font-size: 1rem; }
 
             .sb-header { padding: 10px 12px; }
+            .section-header { padding: 10px 12px; }
+            .section-body { padding: 10px; }
             .sb-body { padding: 10px; }
             .sb-row { grid-template-columns: 1fr; gap: 8px; }
             .sb-actions { flex-direction: column; }
@@ -648,72 +668,82 @@
             </div>
         </div>
 
-        <!-- Controls -->
-        <div class="controls">
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Search by player name..." autocomplete="off">
+        <!-- Top 100 Rankings Module -->
+        <div class="section-module">
+            <div class="section-header">
+                <div class="section-header-left">
+                    <span class="sb-icon">&#x1F3C6;</span>
+                    <span class="sb-title">Top 100 Prospect Rankings</span>
+                    <span class="sb-subtitle">Live eBay prices · sortable · searchable</span>
+                </div>
             </div>
-            <select id="teamFilter">
-                <option value="">All Teams</option>
-                <option value="ARI">Arizona Diamondbacks</option>
-                <option value="ATL">Atlanta Braves</option>
-                <option value="BAL">Baltimore Orioles</option>
-                <option value="BOS">Boston Red Sox</option>
-                <option value="CHC">Chicago Cubs</option>
-                <option value="CWS">Chicago White Sox</option>
-                <option value="CIN">Cincinnati Reds</option>
-                <option value="CLE">Cleveland Guardians</option>
-                <option value="COL">Colorado Rockies</option>
-                <option value="DET">Detroit Tigers</option>
-                <option value="HOU">Houston Astros</option>
-                <option value="KC">Kansas City Royals</option>
-                <option value="LAA">Los Angeles Angels</option>
-                <option value="LAD">Los Angeles Dodgers</option>
-                <option value="MIA">Miami Marlins</option>
-                <option value="MIL">Milwaukee Brewers</option>
-                <option value="MIN">Minnesota Twins</option>
-                <option value="NYM">New York Mets</option>
-                <option value="NYY">New York Yankees</option>
-                <option value="OAK">Oakland Athletics</option>
-                <option value="PHI">Philadelphia Phillies</option>
-                <option value="PIT">Pittsburgh Pirates</option>
-                <option value="SD">San Diego Padres</option>
-                <option value="SEA">Seattle Mariners</option>
-                <option value="SF">San Francisco Giants</option>
-                <option value="STL">St. Louis Cardinals</option>
-                <option value="TB">Tampa Bay Rays</option>
-                <option value="TEX">Texas Rangers</option>
-                <option value="TOR">Toronto Blue Jays</option>
-                <option value="WSH">Washington Nationals</option>
-            </select>
-        </div>
+            <div class="section-body">
+                <div class="controls">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Search by player name..." autocomplete="off">
+                    </div>
+                    <select id="teamFilter">
+                        <option value="">All Teams</option>
+                        <option value="ARI">Arizona Diamondbacks</option>
+                        <option value="ATL">Atlanta Braves</option>
+                        <option value="BAL">Baltimore Orioles</option>
+                        <option value="BOS">Boston Red Sox</option>
+                        <option value="CHC">Chicago Cubs</option>
+                        <option value="CWS">Chicago White Sox</option>
+                        <option value="CIN">Cincinnati Reds</option>
+                        <option value="CLE">Cleveland Guardians</option>
+                        <option value="COL">Colorado Rockies</option>
+                        <option value="DET">Detroit Tigers</option>
+                        <option value="HOU">Houston Astros</option>
+                        <option value="KC">Kansas City Royals</option>
+                        <option value="LAA">Los Angeles Angels</option>
+                        <option value="LAD">Los Angeles Dodgers</option>
+                        <option value="MIA">Miami Marlins</option>
+                        <option value="MIL">Milwaukee Brewers</option>
+                        <option value="MIN">Minnesota Twins</option>
+                        <option value="NYM">New York Mets</option>
+                        <option value="NYY">New York Yankees</option>
+                        <option value="OAK">Oakland Athletics</option>
+                        <option value="PHI">Philadelphia Phillies</option>
+                        <option value="PIT">Pittsburgh Pirates</option>
+                        <option value="SD">San Diego Padres</option>
+                        <option value="SEA">Seattle Mariners</option>
+                        <option value="SF">San Francisco Giants</option>
+                        <option value="STL">St. Louis Cardinals</option>
+                        <option value="TB">Tampa Bay Rays</option>
+                        <option value="TEX">Texas Rangers</option>
+                        <option value="TOR">Toronto Blue Jays</option>
+                        <option value="WSH">Washington Nationals</option>
+                    </select>
+                </div>
 
-        <!-- Table -->
-        <div class="table-wrapper">
-            <div class="table-scroll">
-            <table id="prospectsTable">
-                <thead>
-                    <tr>
-                        <th class="sortable" data-sort="rank">#</th>
-                        <th class="sortable" data-sort="name">Player</th>
-                        <th class="sortable" data-sort="position">Pos</th>
-                        <th class="sortable" data-sort="team">Team</th>
-                        <th class="sortable" data-sort="rawPrice">Avg Raw</th>
-                        <th class="sortable" data-sort="gradedPrice">Avg Graded</th>
-                        <th class="sortable" data-sort="pdPrice">Bowman 1st Yr</th>
-                        <th class="sortable" data-sort="soldPrice">Avg Sold</th>
-                        <th class="sortable" data-sort="listings">Listings</th>
-                        <th class="sortable" data-sort="trend">Trend</th>
-                        <th>Shop</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+                <div class="table-wrapper">
+                    <div class="table-scroll">
+                    <table id="prospectsTable">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="rank">#</th>
+                                <th class="sortable" data-sort="name">Player</th>
+                                <th class="sortable" data-sort="position">Pos</th>
+                                <th class="sortable" data-sort="team">Team</th>
+                                <th class="sortable" data-sort="rawPrice">Avg Raw</th>
+                                <th class="sortable" data-sort="gradedPrice">Avg Graded</th>
+                                <th class="sortable" data-sort="pdPrice">Bowman 1st Yr</th>
+                                <th class="sortable" data-sort="soldPrice">Avg Sold</th>
+                                <th class="sortable" data-sort="listings">Listings</th>
+                                <th class="sortable" data-sort="trend">Trend</th>
+                                <th>Shop</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <div class="show-all-container" id="tableShowAllContainer" style="display:none;">
+                    <button class="btn-primary btn-lg" id="tableShowAllBtn">Show All 100 Prospects</button>
+                </div>
             </div>
-        </div>
-
-        <div class="show-all-container" id="tableShowAllContainer" style="display:none;">
-            <button class="btn-primary btn-lg" id="tableShowAllBtn">Show All 100 Prospects</button>
         </div>
 
         <!-- Detailed Card Breakdowns -->
@@ -901,6 +931,25 @@
 
         function getParallelColor(name) {
             return PARALLEL_COLORS[name] || '#64748b';
+        }
+
+        // Team dominant colors
+        const TEAM_COLORS = {
+            'ARI': '#a71930', 'ATL': '#ce1141', 'BAL': '#df4601',
+            'BOS': '#bd3039', 'CHC': '#0e3386', 'CWS': '#27251f',
+            'CIN': '#c6011f', 'CLE': '#00385d', 'COL': '#333366',
+            'DET': '#0c2340', 'HOU': '#002d62', 'KC': '#004687',
+            'LAA': '#ba0021', 'LAD': '#005a9c', 'MIA': '#00a3e0',
+            'MIL': '#ffc52f', 'MIN': '#002b5c', 'NYM': '#002d72',
+            'NYY': '#003087', 'OAK': '#003831', 'PHI': '#e81828',
+            'PIT': '#fdb827', 'SD': '#2f241d', 'SEA': '#0c2c56',
+            'SF': '#fd5a1e', 'STL': '#c41e3a', 'TB': '#092c5c',
+            'TEX': '#003278', 'TOR': '#134a8e', 'WSH': '#ab0003'
+        };
+        function getTeamColor(team) { return TEAM_COLORS[team] || '#f97316'; }
+        function getTeamTextColor(team) {
+            const light = ['MIL', 'PIT'];
+            return light.includes(team) ? '#18181b' : '#ffffff';
         }
 
         // ═══════════════════════════════════════════════════════
@@ -1220,10 +1269,12 @@
                 ].filter(Boolean).join(' | ');
 
                 const cardLink = d.affiliateUrl || getEbayLink(p.name);
+                const teamColor = getTeamColor(p.team);
+                const teamText = getTeamTextColor(p.team);
                 card.innerHTML = `
-                    <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="card-header" style="text-decoration:none;">
-                        <div class="card-name">${p.name}</div>
-                        <span class="card-pos">${p.position}</span>
+                    <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="card-header" style="text-decoration:none;background-color:${teamColor};">
+                        <div class="card-name" style="color:${teamText}">${p.name}</div>
+                        <span class="card-pos" style="color:${teamText};background-color:rgba(${teamText === '#ffffff' ? '255,255,255' : '0,0,0'},0.2)">${p.position}</span>
                     </a>
                     <div class="card-team-bar">
                         <span>${p.team} · #${p.rank}</span>
@@ -1267,7 +1318,7 @@
                             ${thumbHTML}
                         </div>
                         <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:12px;">
-                            <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width:100%;text-decoration:none;">Shop ${p.name} on eBay</a>
+                            <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width:100%;text-decoration:none;background-color:${teamColor};color:${teamText};">Shop ${p.name} on eBay</a>
                         </div>
                     </div>
                 `;
