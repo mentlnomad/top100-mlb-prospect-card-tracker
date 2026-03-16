@@ -256,7 +256,34 @@
 
         /* ═══ Card Breakdowns ═══ */
         .detailed-breakdowns { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
-        .breakdowns-title { font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 700; margin-bottom: 20px; color: var(--foreground); letter-spacing: -0.025em; }
+        .breakdowns-header {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+        }
+        .breakdowns-title { font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 700; margin: 0; color: var(--foreground); letter-spacing: -0.025em; }
+        .breakdowns-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+        .card-filter-select {
+            padding: 6px 32px 6px 12px; height: 36px; font-size: 0.8125rem; font-weight: 500;
+            background-color: var(--input-fill); color: var(--foreground);
+            border: 1px solid var(--border); border-radius: var(--radius);
+            cursor: pointer; appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 10px center;
+            transition: border-color 0.15s;
+        }
+        .card-filter-select:hover { border-color: var(--muted-fg); }
+        .card-filter-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(249,115,22,0.15); }
+        .parallel-filter-summary {
+            background-color: var(--muted); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 12px 16px; margin-bottom: 16px;
+            display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+            font-size: 0.8125rem;
+        }
+        .pfs-stat { display: flex; flex-direction: column; gap: 2px; }
+        .pfs-stat-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted-fg); font-weight: 600; }
+        .pfs-stat-value { font-weight: 700; color: var(--foreground); font-size: 1rem; }
+        .pfs-highlight { color: var(--primary); }
+        .parallel-highlight { background-color: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.25); border-radius: var(--radius); padding: 2px 0; }
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-bottom: 24px; }
 
         .prospect-card {
@@ -471,6 +498,9 @@
             .card-name { font-size: 0.8125rem; }
 
             .detailed-breakdowns { margin-top: 24px; padding-top: 16px; }
+            .breakdowns-header { flex-direction: column; align-items: stretch; }
+            .breakdowns-filters { width: 100%; }
+            .card-filter-select { flex: 1; min-width: 0; }
         }
 
         /* ═══ RESPONSIVE — Mobile (<=480px) ═══ */
@@ -495,6 +525,9 @@
             table { min-width: 600px; }
 
             .cards-grid { grid-template-columns: 1fr; gap: 10px; }
+            .parallel-filter-summary { gap: 10px; padding: 10px 12px; }
+            .pfs-stat { flex: 1; min-width: 70px; }
+            .card-filter-select { font-size: 0.75rem; height: 32px; }
             .price-grid { gap: 4px; }
             .pg-box { padding: 6px; }
             .pg-value { font-size: 0.8125rem; }
@@ -797,7 +830,49 @@
 
         <!-- Detailed Card Breakdowns -->
         <div class="detailed-breakdowns">
-            <h2 class="breakdowns-title">Detailed Card Breakdowns</h2>
+            <div class="breakdowns-header">
+                <h2 class="breakdowns-title">Detailed Card Breakdowns</h2>
+                <div class="breakdowns-filters">
+                    <select id="cardParallelFilter" class="card-filter-select">
+                        <option value="">All Parallels</option>
+                        <optgroup label="Standard Refractors">
+                            <option value="Base">Base</option>
+                            <option value="Refractor">Refractor</option>
+                            <option value="Sky Blue">Sky Blue</option>
+                            <option value="Purple">Purple</option>
+                            <option value="Blue">Blue</option>
+                            <option value="Green">Green</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Orange">Orange</option>
+                            <option value="Red">Red</option>
+                            <option value="Superfractor">Superfractor</option>
+                        </optgroup>
+                        <optgroup label="Pattern Refractors">
+                            <option value="Speckle">Speckle</option>
+                            <option value="Shimmer">Shimmer</option>
+                            <option value="Wave">Wave</option>
+                            <option value="Lava">Lava</option>
+                            <option value="Mojo">Mojo</option>
+                            <option value="Atomic">Atomic</option>
+                        </optgroup>
+                        <optgroup label="Premium">
+                            <option value="Sapphire">Sapphire</option>
+                            <option value="Canary">Canary Diamond</option>
+                            <option value="Rose Gold">Rose Gold</option>
+                            <option value="Printing Plate">Printing Plate</option>
+                        </optgroup>
+                    </select>
+                    <select id="cardSortBy" class="card-filter-select">
+                        <option value="rank">Sort: Rank</option>
+                        <option value="parallel-count">Sort: Most of Parallel</option>
+                        <option value="parallel-price">Sort: Highest Parallel Avg</option>
+                        <option value="raw-price">Sort: Avg Raw Price</option>
+                        <option value="graded-price">Sort: Avg Graded Price</option>
+                        <option value="listings">Sort: Most Listings</option>
+                    </select>
+                </div>
+            </div>
+            <div id="parallelFilterSummary" class="parallel-filter-summary" style="display:none;"></div>
             <div class="cards-grid" id="cardsGrid"></div>
             <div class="show-all-container" id="cardsShowAllContainer" style="display:none;">
                 <button class="btn-slate btn-lg" id="cardsShowAllBtn">Show All 100 Prospects</button>
@@ -1260,13 +1335,95 @@
         }
 
         // ═══════════════════════════════════════════════════════
+        // PARALLEL FILTER HELPERS
+        // ═══════════════════════════════════════════════════════
+        function getParallelEntry(pDist, filter) {
+            const entry = Object.entries(pDist).find(([k]) => k.toLowerCase().includes(filter.toLowerCase()));
+            return entry ? entry[1] : null;
+        }
+
+        function updateParallelFilterSummary(cards, parallelFilter) {
+            const el = document.getElementById('parallelFilterSummary');
+            if (!parallelFilter) { el.style.display = 'none'; return; }
+
+            let totalCount = 0, totalValue = 0, prices = [], prospectsWithParallel = 0;
+            const allCards = (filteredProspects.length > 0 ? filteredProspects : prospectsData);
+            allCards.forEach(p => {
+                const d = allProspectData[p.key] || {};
+                const pDist = d.parallelDist || {};
+                const entry = getParallelEntry(pDist, parallelFilter);
+                if (entry) {
+                    prospectsWithParallel++;
+                    totalCount += entry.count;
+                    if (entry.avgPrice) { prices.push(entry.avgPrice); totalValue += entry.avgPrice * entry.count; }
+                }
+            });
+
+            const avgPrice = prices.length > 0 ? prices.reduce((a, b) => a + b, 0) / prices.length : 0;
+            const highPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
+            el.style.display = 'flex';
+            el.innerHTML = `
+                <div class="pfs-stat"><span class="pfs-stat-label">Parallel</span><span class="pfs-stat-value pfs-highlight">${parallelFilter}</span></div>
+                <div class="pfs-stat"><span class="pfs-stat-label">Prospects</span><span class="pfs-stat-value">${prospectsWithParallel} of ${allCards.length}</span></div>
+                <div class="pfs-stat"><span class="pfs-stat-label">Total Listings</span><span class="pfs-stat-value">${totalCount}</span></div>
+                <div class="pfs-stat"><span class="pfs-stat-label">Avg Price</span><span class="pfs-stat-value">${avgPrice ? fmt(avgPrice) : '—'}</span></div>
+                <div class="pfs-stat"><span class="pfs-stat-label">Highest Avg</span><span class="pfs-stat-value">${highPrice ? fmt(highPrice) : '—'}</span></div>
+                ${totalValue > 0 ? `<div class="pfs-stat"><span class="pfs-stat-label">Est. Market</span><span class="pfs-stat-value pfs-highlight">${fmt(totalValue)}</span></div>` : ''}
+            `;
+        }
+
+        // ═══════════════════════════════════════════════════════
         // DETAILED CARDS
         // ═══════════════════════════════════════════════════════
         function renderDetailedCards() {
             const grid = document.getElementById('cardsGrid');
             grid.innerHTML = '';
 
-            let cards = filteredProspects.length > 0 ? filteredProspects : prospectsData;
+            const parallelFilter = document.getElementById('cardParallelFilter').value;
+            const sortBy = document.getElementById('cardSortBy').value;
+
+            let cards = (filteredProspects.length > 0 ? filteredProspects : prospectsData).slice();
+
+            // Filter: only show prospects that have the selected parallel
+            if (parallelFilter) {
+                cards = cards.filter(p => {
+                    const d = allProspectData[p.key] || {};
+                    const pDist = d.parallelDist || {};
+                    return Object.keys(pDist).some(k => k.toLowerCase().includes(parallelFilter.toLowerCase()));
+                });
+            }
+
+            // Sort
+            if (sortBy !== 'rank') {
+                cards.sort((a, b) => {
+                    const da = allProspectData[a.key] || {};
+                    const db = allProspectData[b.key] || {};
+                    const pda = da.parallelDist || {};
+                    const pdb = db.parallelDist || {};
+                    switch (sortBy) {
+                        case 'parallel-count': {
+                            const ca = parallelFilter ? (getParallelEntry(pda, parallelFilter)?.count || 0) : Object.values(pda).reduce((s, v) => s + v.count, 0);
+                            const cb = parallelFilter ? (getParallelEntry(pdb, parallelFilter)?.count || 0) : Object.values(pdb).reduce((s, v) => s + v.count, 0);
+                            return cb - ca;
+                        }
+                        case 'parallel-price': {
+                            const pa = parallelFilter ? (getParallelEntry(pda, parallelFilter)?.avgPrice || 0) : Math.max(0, ...Object.values(pda).map(v => v.avgPrice || 0));
+                            const pb = parallelFilter ? (getParallelEntry(pdb, parallelFilter)?.avgPrice || 0) : Math.max(0, ...Object.values(pdb).map(v => v.avgPrice || 0));
+                            return pb - pa;
+                        }
+                        case 'raw-price': return (db.avgRaw || 0) - (da.avgRaw || 0);
+                        case 'graded-price': return (db.avgGraded || 0) - (da.avgGraded || 0);
+                        case 'listings': return ((db.items || []).length) - ((da.items || []).length);
+                        default: return 0;
+                    }
+                });
+            }
+
+            // Update summary bar
+            updateParallelFilterSummary(cards, parallelFilter);
+
+            const totalCardCount = cards.length;
             if (!showAllCards && cards.length > 24) cards = cards.slice(0, 24);
 
             cards.forEach(p => {
@@ -1284,7 +1441,8 @@
                     pEntries.forEach(([name, data]) => {
                         const pct = Math.max(5, (data.count / maxCount) * 100);
                         const color = getParallelColor(name);
-                        parallelHTML += `<div class="parallel-bar-row">
+                        const isHighlighted = parallelFilter && name.toLowerCase().includes(parallelFilter.toLowerCase());
+                        parallelHTML += `<div class="parallel-bar-row${isHighlighted ? ' parallel-highlight' : ''}">
                             <div class="parallel-bar-label">${name}</div>
                             <div class="parallel-bar-track"><div class="parallel-bar-fill" style="width:${pct}%;background:${color}"></div></div>
                             <div class="parallel-bar-value">${data.count}x ${data.avgPrice ? fmt(data.avgPrice) : ''}</div>
@@ -1385,14 +1543,14 @@
                 grid.appendChild(card);
             });
 
-            updateCardsShowAllButton();
+            updateCardsShowAllButton(totalCardCount);
         }
 
-        function updateCardsShowAllButton() {
+        function updateCardsShowAllButton(totalCount) {
             const c = document.getElementById('cardsShowAllContainer');
             const b = document.getElementById('cardsShowAllBtn');
-            const count = (filteredProspects.length > 0 ? filteredProspects : prospectsData).length;
-            if (count > 24 && !showAllCards) { c.style.display = 'block'; b.textContent = 'Show All 100 Prospects'; }
+            const count = totalCount !== undefined ? totalCount : (filteredProspects.length > 0 ? filteredProspects : prospectsData).length;
+            if (count > 24 && !showAllCards) { c.style.display = 'block'; b.textContent = `Show All ${count} Prospects`; }
             else if (count > 24 && showAllCards) { c.style.display = 'block'; b.textContent = 'Show Top 24'; }
             else { c.style.display = 'none'; }
         }
@@ -1620,6 +1778,10 @@
 
             document.getElementById('tableShowAllBtn').addEventListener('click', () => { showAllTable = !showAllTable; renderTable(); });
             document.getElementById('cardsShowAllBtn').addEventListener('click', () => { showAllCards = !showAllCards; renderDetailedCards(); });
+
+            // Parallel filter & sort dropdowns
+            document.getElementById('cardParallelFilter').addEventListener('change', () => { showAllCards = false; renderDetailedCards(); });
+            document.getElementById('cardSortBy').addEventListener('change', () => { showAllCards = false; renderDetailedCards(); });
 
             fetchProspectData();
         });
