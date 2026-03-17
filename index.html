@@ -424,6 +424,73 @@
         .sb-checks { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 8px 0; }
         .sb-check { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.8125rem; color: var(--foreground); }
         .sb-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; border-radius: var(--radius-sm); }
+
+        /* ═══ Price Range Slider ═══ */
+        .sb-price-range { padding: 10px 0 4px; }
+        .sb-price-range .sb-label { display: block; margin-bottom: 8px; }
+        .sb-price-inputs {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+        }
+        .sb-price-field {
+            display: flex; align-items: center; gap: 0;
+            background-color: var(--input-fill); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden; flex: 1; max-width: 160px;
+        }
+        .sb-price-currency {
+            padding: 6px 0 6px 10px; font-size: 0.8125rem; font-weight: 600;
+            color: var(--muted-fg); user-select: none;
+        }
+        .sb-price-field input {
+            background: transparent; border: none; outline: none;
+            padding: 6px 10px 6px 4px; font-size: 0.8125rem; font-weight: 600;
+            color: var(--foreground); width: 100%; font-family: inherit;
+            -moz-appearance: textfield;
+        }
+        .sb-price-field input::-webkit-outer-spin-button,
+        .sb-price-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .sb-price-sep { font-size: 0.75rem; color: var(--muted-fg); font-weight: 500; }
+        .sb-slider-container {
+            position: relative; height: 28px; display: flex; align-items: center;
+        }
+        .sb-slider-track {
+            position: absolute; height: 4px; border-radius: 2px;
+            background: var(--primary); top: 50%; transform: translateY(-50%);
+            pointer-events: none; z-index: 1;
+        }
+        .sb-range {
+            position: absolute; width: 100%; height: 4px;
+            -webkit-appearance: none; appearance: none;
+            background: transparent; pointer-events: none; z-index: 2;
+            top: 50%; transform: translateY(-50%); margin: 0;
+        }
+        .sb-range::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--primary); border: 2px solid var(--background);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            cursor: pointer; pointer-events: all;
+            position: relative; z-index: 3;
+        }
+        .sb-range::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%;
+            background: var(--primary); border: 2px solid var(--background);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            cursor: pointer; pointer-events: all;
+        }
+        .sb-range::-webkit-slider-runnable-track {
+            height: 4px; background: var(--border); border-radius: 2px;
+        }
+        .sb-range::-moz-range-track {
+            height: 4px; background: var(--border); border-radius: 2px;
+        }
+        .sb-range-min::-webkit-slider-runnable-track { background: transparent; }
+        .sb-range-max::-webkit-slider-runnable-track { background: transparent; }
+        .sb-price-labels {
+            display: flex; justify-content: space-between;
+            font-size: 0.625rem; color: var(--text-muted); margin-top: 2px;
+            padding: 0 2px; user-select: none;
+        }
+
         .sb-actions { display: flex; gap: 10px; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); }
         .sb-search-btn { flex: 1; }
         .sb-preview {
@@ -520,6 +587,8 @@
             .sb-actions .btn-primary, .sb-actions .btn-outline { width: 100%; }
             .sb-checks { gap: 6px; }
             .sb-check { font-size: 0.75rem; }
+            .sb-price-inputs { gap: 8px; }
+            .sb-price-field { max-width: none; }
             .sb-check input[type="checkbox"] { width: 14px; height: 14px; }
 
             table { min-width: 600px; }
@@ -730,16 +799,45 @@
 
                 <!-- Row 3: Checkboxes -->
                 <div class="sb-checks">
-                    <label class="sb-check"><input type="checkbox" id="sbAuto" checked> Autograph</label>
+                    <label class="sb-check"><input type="checkbox" id="sbAuto"> Autograph</label>
                     <label class="sb-check"><input type="checkbox" id="sb1stBowman"> 1st Bowman</label>
                     <label class="sb-check"><input type="checkbox" id="sbChrome"> Chrome Only</label>
                     <label class="sb-check"><input type="checkbox" id="sbSP"> SP / SSP</label>
                 </div>
 
+                <!-- Row 4: Price Range Slider -->
+                <div class="sb-price-range">
+                    <span class="sb-label">Price Range</span>
+                    <div class="sb-price-inputs">
+                        <div class="sb-price-field">
+                            <span class="sb-price-currency">$</span>
+                            <input type="number" id="sbPriceMin" value="0" min="0" max="250000" step="1">
+                        </div>
+                        <span class="sb-price-sep">to</span>
+                        <div class="sb-price-field">
+                            <span class="sb-price-currency">$</span>
+                            <input type="number" id="sbPriceMax" value="250000" min="0" max="250000" step="1">
+                        </div>
+                    </div>
+                    <div class="sb-slider-container">
+                        <div class="sb-slider-track" id="sbSliderTrack"></div>
+                        <input type="range" id="sbRangeMin" class="sb-range sb-range-min" min="0" max="250000" value="0" step="100">
+                        <input type="range" id="sbRangeMax" class="sb-range sb-range-max" min="0" max="250000" value="250000" step="100">
+                    </div>
+                    <div class="sb-price-labels">
+                        <span>$0</span>
+                        <span>$50k</span>
+                        <span>$100k</span>
+                        <span>$150k</span>
+                        <span>$200k</span>
+                        <span>$250k</span>
+                    </div>
+                </div>
+
                 <!-- Search preview -->
                 <div class="sb-preview" id="sbPreview">
                     <span class="sb-preview-label">Search Preview:</span>
-                    <span class="sb-preview-query" id="sbPreviewQuery">auto</span>
+                    <span class="sb-preview-query" id="sbPreviewQuery">Bowman auto</span>
                 </div>
 
                 <!-- Actions -->
@@ -1607,6 +1705,11 @@
                     firstBowman: document.getElementById('sb1stBowman'),
                     chrome: document.getElementById('sbChrome'),
                     sp: document.getElementById('sbSP'),
+                    priceMin: document.getElementById('sbPriceMin'),
+                    priceMax: document.getElementById('sbPriceMax'),
+                    rangeMin: document.getElementById('sbRangeMin'),
+                    rangeMax: document.getElementById('sbRangeMax'),
+                    sliderTrack: document.getElementById('sbSliderTrack'),
                     preview: document.getElementById('sbPreviewQuery'),
                     searchBtn: document.getElementById('sbSearchBtn'),
                     clearBtn: document.getElementById('sbClearBtn'),
@@ -1627,6 +1730,39 @@
                 ['auto', 'firstBowman', 'chrome', 'sp'].forEach(id => {
                     this.els[id].addEventListener('change', updatePreview);
                 });
+
+                // Price range slider sync
+                this.els.rangeMin.addEventListener('input', () => {
+                    let min = parseInt(this.els.rangeMin.value);
+                    let max = parseInt(this.els.rangeMax.value);
+                    if (min > max - 100) { min = max - 100; this.els.rangeMin.value = min; }
+                    this.els.priceMin.value = min;
+                    this.updateSliderTrack();
+                    updatePreview();
+                });
+                this.els.rangeMax.addEventListener('input', () => {
+                    let min = parseInt(this.els.rangeMin.value);
+                    let max = parseInt(this.els.rangeMax.value);
+                    if (max < min + 100) { max = min + 100; this.els.rangeMax.value = max; }
+                    this.els.priceMax.value = max;
+                    this.updateSliderTrack();
+                    updatePreview();
+                });
+                this.els.priceMin.addEventListener('input', () => {
+                    let val = parseInt(this.els.priceMin.value) || 0;
+                    val = Math.max(0, Math.min(val, 250000));
+                    this.els.rangeMin.value = val;
+                    this.updateSliderTrack();
+                    updatePreview();
+                });
+                this.els.priceMax.addEventListener('input', () => {
+                    let val = parseInt(this.els.priceMax.value) || 250000;
+                    val = Math.max(0, Math.min(val, 250000));
+                    this.els.rangeMax.value = val;
+                    this.updateSliderTrack();
+                    updatePreview();
+                });
+                this.updateSliderTrack();
 
                 // Autocomplete — typing filters the list
                 this.els.player.addEventListener('focus', () => this.showSuggestions());
@@ -1666,6 +1802,21 @@
                 this.updatePreview();
             },
 
+            updateSliderTrack() {
+                const min = parseInt(this.els.rangeMin.value);
+                const max = parseInt(this.els.rangeMax.value);
+                const pctMin = (min / 250000) * 100;
+                const pctMax = (max / 250000) * 100;
+                this.els.sliderTrack.style.left = pctMin + '%';
+                this.els.sliderTrack.style.right = (100 - pctMax) + '%';
+            },
+
+            getPriceRange() {
+                const min = parseInt(this.els.priceMin.value) || 0;
+                const max = parseInt(this.els.priceMax.value) || 250000;
+                return { min, max, hasFilter: min > 0 || max < 250000 };
+            },
+
             buildQuery() {
                 const parts = [];
                 const player = this.els.player.value.trim();
@@ -1693,16 +1844,32 @@
                 return parts.join(' ') || 'Bowman auto';
             },
 
+            buildPreviewText() {
+                let text = this.buildQuery();
+                const price = this.getPriceRange();
+                if (price.hasFilter) {
+                    const fmtMin = price.min.toLocaleString();
+                    const fmtMax = price.max.toLocaleString();
+                    if (price.min > 0 && price.max < 250000) text += `  ·  $${fmtMin} – $${fmtMax}`;
+                    else if (price.min > 0) text += `  ·  $${fmtMin}+`;
+                    else text += `  ·  up to $${fmtMax}`;
+                }
+                return text;
+            },
+
             updatePreview() {
-                this.els.preview.textContent = this.buildQuery();
+                this.els.preview.textContent = this.buildPreviewText();
             },
 
             doSearch() {
                 const query = this.buildQuery();
-                const url = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(query)
+                const price = this.getPriceRange();
+                let url = 'https://www.ebay.com/sch/i.html?_nkw=' + encodeURIComponent(query)
                     + '&_sacat=261328'
                     + '&mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=' + CAMPAIGN_ID
                     + '&toolid=10001&mkevt=1';
+                if (price.min > 0) url += '&_udlo=' + price.min;
+                if (price.max < 250000) url += '&_udhi=' + price.max;
                 window.open(url, '_blank');
             },
 
@@ -1713,10 +1880,15 @@
                 this.els.parallel.value = '';
                 this.els.grade.value = '';
                 this.els.serial.value = '';
-                this.els.auto.checked = true;
+                this.els.auto.checked = false;
                 this.els.firstBowman.checked = false;
                 this.els.chrome.checked = false;
                 this.els.sp.checked = false;
+                this.els.priceMin.value = 0;
+                this.els.priceMax.value = 250000;
+                this.els.rangeMin.value = 0;
+                this.els.rangeMax.value = 250000;
+                this.updateSliderTrack();
                 this.els.suggestions.classList.remove('visible');
                 this.updatePreview();
             },
