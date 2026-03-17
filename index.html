@@ -172,7 +172,7 @@
 
         /* ═══ Controls ═══ */
         .controls {
-            display: grid; grid-template-columns: 1fr 200px;
+            display: grid; grid-template-columns: 1fr 200px 200px;
             gap: 12px; margin-bottom: 16px; align-items: center;
         }
         .controls input[type="text"], .controls select {
@@ -343,6 +343,8 @@
         .asking-tag { background-color: var(--success-bg); color: var(--success); }
         .sold-tag { background-color: var(--amber-bg); color: var(--amber); }
         .price-sold { color: var(--amber); font-weight: 600; }
+        .price-parallel { color: var(--primary); font-weight: 700; }
+        .parallel-col { color: var(--primary); }
 
         /* ═══ Insights ═══ */
         .insights-grid { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -553,7 +555,8 @@
             .stat-value { font-size: 1.125rem; }
             .stat-detail { font-size: 0.6875rem; }
 
-            .controls { grid-template-columns: 1fr; gap: 8px; margin-bottom: 12px; }
+            .controls { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+            .controls .search-container { grid-column: span 2; }
             .section-body { padding: 12px; }
             .section-header .sb-subtitle { display: none; }
 
@@ -872,6 +875,35 @@
                     <div class="search-container">
                         <input type="text" id="searchInput" placeholder="Search by player name..." autocomplete="off">
                     </div>
+                    <select id="tableParallelFilter" class="table-parallel-filter">
+                        <option value="">All Parallels</option>
+                        <optgroup label="Standard Refractors">
+                            <option value="Base">Base</option>
+                            <option value="Refractor">Refractor</option>
+                            <option value="Sky Blue">Sky Blue</option>
+                            <option value="Purple">Purple</option>
+                            <option value="Blue">Blue</option>
+                            <option value="Green">Green</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Orange">Orange</option>
+                            <option value="Red">Red</option>
+                            <option value="Superfractor">Superfractor</option>
+                        </optgroup>
+                        <optgroup label="Pattern Refractors">
+                            <option value="Speckle">Speckle</option>
+                            <option value="Shimmer">Shimmer</option>
+                            <option value="Wave">Wave</option>
+                            <option value="Lava">Lava</option>
+                            <option value="Mojo">Mojo</option>
+                            <option value="Atomic">Atomic</option>
+                        </optgroup>
+                        <optgroup label="Premium">
+                            <option value="Sapphire">Sapphire</option>
+                            <option value="Canary">Canary Diamond</option>
+                            <option value="Rose Gold">Rose Gold</option>
+                            <option value="Printing Plate">Printing Plate</option>
+                        </optgroup>
+                    </select>
                     <select id="teamFilter">
                         <option value="">All Teams</option>
                         <option value="ARI">Arizona Diamondbacks</option>
@@ -919,6 +951,8 @@
                                 <th class="sortable" data-sort="rawPrice">Asking Raw</th>
                                 <th class="sortable" data-sort="gradedPrice">Asking Graded</th>
                                 <th class="sortable" data-sort="soldPrice">Last Sold</th>
+                                <th class="sortable parallel-col" data-sort="parallelCount" style="display:none;">Parallel #</th>
+                                <th class="sortable parallel-col" data-sort="parallelPrice" style="display:none;">Parallel Avg</th>
                                 <th class="sortable" data-sort="pdPrice">Pro Debut</th>
                                 <th class="sortable" data-sort="listings">Listings</th>
                                 <th class="sortable" data-sort="trend">Trend</th>
@@ -1203,18 +1237,33 @@
             tbody.innerHTML = '';
 
             if (filteredProspects.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" class="no-results"><h3>No prospects found</h3><p>Try adjusting your search or filter</p></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="13" class="no-results"><h3>No prospects found</h3><p>Try adjusting your search or filter</p></td></tr>';
                 updateShowAllButton();
                 return;
             }
 
             const display = showAllTable || filteredProspects.length <= 24 ? filteredProspects : filteredProspects.slice(0, 24);
 
+            const tableParallel = document.getElementById('tableParallelFilter').value;
+
             display.forEach(p => {
                 const d = allProspectData[p.key] || {};
                 const trendText = d.trend || '\u2014';
                 const trendClass = trendText === '\u2014' ? 'trend-neutral' : (trendText.includes('\u2191') ? 'trend-up' : trendText.includes('\u2193') ? 'trend-down' : 'trend-neutral');
                 const sent = d.sentiment || 'cold';
+
+                // Parallel data for this prospect
+                let parallelCellsHTML = '';
+                if (tableParallel) {
+                    const pDist = d.parallelDist || {};
+                    const entry = Object.entries(pDist).find(([k]) => k.toLowerCase().includes(tableParallel.toLowerCase()));
+                    const pCount = entry ? entry[1].count : 0;
+                    const pAvg = entry ? entry[1].avgPrice : null;
+                    parallelCellsHTML = `
+                        <td class="parallel-data" style="text-align:center;font-weight:600;">${pCount > 0 ? pCount + 'x' : '\u2014'}</td>
+                        <td class="parallel-data price-parallel">${pAvg ? fmt(pAvg) : '\u2014'}</td>
+                    `;
+                }
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -1225,6 +1274,7 @@
                     <td class="price-raw">${fmt(d.avgRaw)}</td>
                     <td class="price-graded">${fmt(d.avgGraded)}</td>
                     <td class="price-sold">${fmt(d.soldAvg)}</td>
+                    ${parallelCellsHTML}
                     <td class="price-pd">${fmt(d.pdAvgRaw)}</td>
                     <td style="text-align:center;">${d.totalListings ? d.totalListings.toLocaleString() : '\u2014'}</td>
                     <td class="trend ${trendClass}"><span class="sentiment sentiment-${sent}"></span>${trendText}</td>
@@ -1250,9 +1300,34 @@
         function applyFilters() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const team = document.getElementById('teamFilter').value;
+            const tableParallel = document.getElementById('tableParallelFilter').value;
+
             filteredProspects = prospectsData.filter(p => {
-                return p.name.toLowerCase().includes(term) && (!team || p.team === team);
+                const nameMatch = p.name.toLowerCase().includes(term);
+                const teamMatch = !team || p.team === team;
+                let parallelMatch = true;
+                if (tableParallel) {
+                    const d = allProspectData[p.key] || {};
+                    const pDist = d.parallelDist || {};
+                    parallelMatch = Object.keys(pDist).some(k => k.toLowerCase().includes(tableParallel.toLowerCase()));
+                }
+                return nameMatch && teamMatch && parallelMatch;
             });
+
+            // Show/hide parallel columns in table
+            const parallelCols = document.querySelectorAll('.parallel-col');
+            const parallelDataCells = document.querySelectorAll('.parallel-data');
+            if (tableParallel) {
+                parallelCols.forEach(el => { el.style.display = ''; });
+                // Update header text
+                parallelCols.forEach(el => {
+                    if (el.dataset.sort === 'parallelCount') el.textContent = tableParallel + ' #';
+                    if (el.dataset.sort === 'parallelPrice') el.textContent = tableParallel + ' Avg';
+                });
+            } else {
+                parallelCols.forEach(el => { el.style.display = 'none'; });
+            }
+
             applySorting();
             renderTable();
             renderDetailedCards();
@@ -1272,6 +1347,18 @@
                     case 'gradedPrice': aV = dA.avgGraded || 0; bV = dB.avgGraded || 0; break;
                     case 'pdPrice': aV = dA.pdAvgRaw || 0; bV = dB.pdAvgRaw || 0; break;
                     case 'soldPrice': aV = dA.soldAvg || 0; bV = dB.soldAvg || 0; break;
+                    case 'parallelCount': {
+                        const tp = document.getElementById('tableParallelFilter').value;
+                        const eA = tp ? getParallelEntry(dA.parallelDist || {}, tp) : null;
+                        const eB = tp ? getParallelEntry(dB.parallelDist || {}, tp) : null;
+                        aV = eA ? eA.count : 0; bV = eB ? eB.count : 0; break;
+                    }
+                    case 'parallelPrice': {
+                        const tp2 = document.getElementById('tableParallelFilter').value;
+                        const eA2 = tp2 ? getParallelEntry(dA.parallelDist || {}, tp2) : null;
+                        const eB2 = tp2 ? getParallelEntry(dB.parallelDist || {}, tp2) : null;
+                        aV = eA2 ? (eA2.avgPrice || 0) : 0; bV = eB2 ? (eB2.avgPrice || 0) : 0; break;
+                    }
                     case 'listings': aV = dA.totalListings || 0; bV = dB.totalListings || 0; break;
                     case 'trend': aV = dA.trendValue || 0; bV = dB.trendValue || 0; break;
                     default: return 0;
@@ -1295,6 +1382,7 @@
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('teamFilter').addEventListener('change', applyFilters);
+        document.getElementById('tableParallelFilter').addEventListener('change', applyFilters);
 
         // ═══════════════════════════════════════════════════════
         // DASHBOARD
