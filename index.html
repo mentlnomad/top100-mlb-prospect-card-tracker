@@ -334,6 +334,16 @@
         .pg-box.sold-avg .pg-value, .pg-box.sold-high .pg-value { color: var(--amber); }
         .pg-sub { font-size: 0.625rem; color: var(--muted-fg); }
 
+        /* ═══ Price Source Tags ═══ */
+        .price-source-tag {
+            display: inline-block; padding: 1px 6px; border-radius: 4px;
+            font-size: 0.5625rem; font-weight: 700; letter-spacing: 0.03em;
+            text-transform: uppercase; vertical-align: middle; margin-left: 6px;
+        }
+        .asking-tag { background-color: var(--success-bg); color: var(--success); }
+        .sold-tag { background-color: var(--amber-bg); color: var(--amber); }
+        .price-sold { color: var(--amber); font-weight: 600; }
+
         /* ═══ Insights ═══ */
         .insights-grid { display: flex; flex-wrap: wrap; gap: 4px; }
         .insight-tag {
@@ -906,10 +916,10 @@
                                 <th class="sortable" data-sort="name">Player</th>
                                 <th class="sortable" data-sort="position">Pos</th>
                                 <th class="sortable" data-sort="team">Team</th>
-                                <th class="sortable" data-sort="rawPrice">Avg Raw</th>
-                                <th class="sortable" data-sort="gradedPrice">Avg Graded</th>
-                                <th class="sortable" data-sort="pdPrice">Bowman 1st Yr</th>
-                                <th class="sortable" data-sort="soldPrice">Avg Sold</th>
+                                <th class="sortable" data-sort="rawPrice">Asking Raw</th>
+                                <th class="sortable" data-sort="gradedPrice">Asking Graded</th>
+                                <th class="sortable" data-sort="soldPrice">Last Sold</th>
+                                <th class="sortable" data-sort="pdPrice">Pro Debut</th>
                                 <th class="sortable" data-sort="listings">Listings</th>
                                 <th class="sortable" data-sort="trend">Trend</th>
                                 <th>Shop</th>
@@ -1214,8 +1224,8 @@
                     <td class="team">${p.team}</td>
                     <td class="price-raw">${fmt(d.avgRaw)}</td>
                     <td class="price-graded">${fmt(d.avgGraded)}</td>
+                    <td class="price-sold">${fmt(d.soldAvg)}</td>
                     <td class="price-pd">${fmt(d.pdAvgRaw)}</td>
-                    <td class="price-raw">${fmt(d.soldAvg)}</td>
                     <td style="text-align:center;">${d.totalListings ? d.totalListings.toLocaleString() : '\u2014'}</td>
                     <td class="trend ${trendClass}"><span class="sentiment sentiment-${sent}"></span>${trendText}</td>
                     <td><a href="${d.affiliateUrl || getEbayLink(p.name)}" target="_blank" rel="noopener noreferrer" class="btn-primary shop-btn">Shop</a></td>
@@ -1598,7 +1608,7 @@
                     </div>
                     <div class="card-body">
                         <div class="card-section">
-                            <div class="card-section-title">Bowman Chrome Auto</div>
+                            <div class="card-section-title">Asking Prices <span class="price-source-tag asking-tag">Live Listings</span></div>
                             <div class="price-grid">
                                 <div class="pg-box raw-avg"><div class="pg-label">AVG RAW</div><div class="pg-value">${fmt(d.avgRaw)}</div></div>
                                 <div class="pg-box graded-avg"><div class="pg-label">AVG GRADED</div><div class="pg-value">${fmt(d.avgGraded)}</div></div>
@@ -1606,17 +1616,16 @@
                                 <div class="pg-box graded-high"><div class="pg-label">HIGH GRADED</div><div class="pg-value">${fmt(d.gradedHigh)}</div></div>
                             </div>
                         </div>
-                        ${(d.soldAvg || d.soldRawAvg || d.soldGradedAvg) ? `
                         <div class="card-section">
-                            <div class="card-section-title">Recent Sales</div>
+                            <div class="card-section-title">Last Sold Prices <span class="price-source-tag sold-tag">Completed Sales</span></div>
                             <div class="price-grid">
-                                <div class="pg-box sold-avg"><div class="pg-label">AVG SOLD RAW</div><div class="pg-value">${fmt(d.soldRawAvg)}</div></div>
-                                <div class="pg-box sold-high"><div class="pg-label">AVG SOLD GRADED</div><div class="pg-value">${fmt(d.soldGradedAvg)}</div></div>
+                                <div class="pg-box sold-avg"><div class="pg-label">SOLD RAW</div><div class="pg-value">${fmt(d.soldRawAvg)}</div></div>
+                                <div class="pg-box sold-high"><div class="pg-label">SOLD GRADED</div><div class="pg-value">${fmt(d.soldGradedAvg)}</div></div>
                             </div>
-                        </div>` : ''}
+                        </div>
                         ${(d.pdAvgRaw || d.pdAvgGraded) ? `
                         <div class="card-section">
-                            <div class="card-section-title">Pro Debut Auto</div>
+                            <div class="card-section-title">Pro Debut Auto <span class="price-source-tag asking-tag">Live Listings</span></div>
                             <div class="price-grid">
                                 <div class="pg-box pd-avg"><div class="pg-label">AVG RAW</div><div class="pg-value">${fmt(d.pdAvgRaw)}</div></div>
                                 <div class="pg-box pd-high"><div class="pg-label">AVG GRADED</div><div class="pg-value">${fmt(d.pdAvgGraded)}</div></div>
