@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collector Psychology & Social Media Strategy — Prospect Card Radar</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f0f1a;color:#e0e0e0;line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:24px}
+.hero{text-align:center;padding:48px 24px;margin-bottom:32px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-radius:16px;border:1px solid #2a2a4a}
+.hero h1{font-size:2.2rem;font-weight:800;margin-bottom:8px;letter-spacing:-0.03em}
+.hero h1 span{color:#e8530e}
+.hero p{color:#888;font-size:1rem}
+.hero .date{font-size:0.8rem;color:#666;margin-top:8px}
+
+.section{margin-bottom:32px}
+.section-title{font-size:1.4rem;font-weight:700;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid #e8530e;display:inline-block}
+
+/* Cards grid */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+.card{background:#16213e;border:1px solid #2a2a4a;border-radius:12px;padding:20px;transition:border-color .2s}
+.card:hover{border-color:#e8530e}
+.card h3{font-size:1rem;font-weight:700;margin-bottom:8px;color:#fff}
+.card p{font-size:0.85rem;color:#aaa;line-height:1.5}
+.card .stat{font-size:2rem;font-weight:800;color:#e8530e;margin-bottom:4px}
+.card .label{font-size:0.7rem;text-transform:uppercase;letter-spacing:.1em;color:#666;margin-bottom:8px}
+
+/* Psychology drivers */
+.driver{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;background:#16213e;border:1px solid #2a2a4a;border-radius:12px;padding:16px}
+.driver-num{width:36px;height:36px;background:#e8530e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;color:#fff}
+.driver h4{font-size:0.95rem;font-weight:700;color:#fff;margin-bottom:4px}
+.driver p{font-size:0.8rem;color:#999}
+
+/* Bar charts */
+.bar-chart{margin-top:12px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.bar-label{font-size:0.75rem;color:#aaa;min-width:120px;text-align:right}
+.bar-track{flex:1;height:20px;background:#1a1a2e;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 1s ease;display:flex;align-items:center;padding-left:8px;font-size:0.65rem;font-weight:700;color:#fff}
+
+/* Table */
+.table-wrap{overflow-x:auto;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:0.8rem}
+th{text-align:left;padding:8px 12px;background:#1a1a2e;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:0.7rem;border-bottom:1px solid #2a2a4a}
+td{padding:8px 12px;border-bottom:1px solid #1a1a2e;color:#ccc}
+tr:hover td{background:#1a1a2e}
+.tier-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.65rem;font-weight:700;text-transform:uppercase}
+.tier-1{background:rgba(232,83,14,.2);color:#e8530e}
+.tier-2{background:rgba(96,165,250,.2);color:#60a5fa}
+.tier-3{background:rgba(74,222,128,.2);color:#4ade80}
+
+/* Pain points */
+.pain{background:#16213e;border-left:3px solid #ef4444;padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:8px}
+.pain h4{font-size:0.85rem;color:#fff;margin-bottom:4px}
+.pain p{font-size:0.8rem;color:#888}
+
+/* Strategy */
+.strategy{background:linear-gradient(135deg,#1a2a1a,#16213e);border:1px solid #2a4a2a;border-radius:12px;padding:20px;margin-bottom:12px}
+.strategy h4{font-size:0.95rem;color:#4ade80;margin-bottom:8px}
+.strategy p{font-size:0.85rem;color:#ccc}
+.strategy .when{font-size:0.75rem;color:#888;margin-top:6px;font-style:italic}
+
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+.cal-day{text-align:center;padding:8px 4px;background:#16213e;border-radius:6px;font-size:0.7rem}
+.cal-day .day-name{color:#888;font-weight:600;text-transform:uppercase;font-size:0.6rem;margin-bottom:4px}
+.cal-day .day-content{color:#ccc;font-size:0.65rem;line-height:1.3}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:8px 20px;border-radius:8px;cursor:pointer;font-size:0.85rem;background:#16213e;color:#888;border:1px solid #2a2a4a;transition:all .2s}
+.tab.active{background:#e8530e;color:#fff;border-color:#e8530e}
+.tab:hover{border-color:#e8530e}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Highlight */
+.highlight{color:#e8530e;font-weight:700}
+.success{color:#4ade80}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+    <h1>Collector Psychology & <span>Social Media Strategy</span></h1>
+    <p>Research report for Prospect Card Radar — understanding what drives baseball card collectors on social media</p>
+    <div class="date">March 2026 · Based on analysis of Reddit, Twitter/X, and industry research</div>
+</div>
+
+<!-- NAV TABS -->
+<div class="tabs">
+    <div class="tab active" onclick="showTab('overview')">Market Overview</div>
+    <div class="tab" onclick="showTab('psychology')">Collector Psychology</div>
+    <div class="tab" onclick="showTab('reddit')">Reddit Strategy</div>
+    <div class="tab" onclick="showTab('twitter')">Twitter/X Accounts</div>
+    <div class="tab" onclick="showTab('strategy')">Engagement Strategy</div>
+    <div class="tab" onclick="showTab('calendar')">Content Calendar</div>
+</div>
+
+<!-- MARKET OVERVIEW -->
+<div class="tab-content active" id="overview">
+<div class="section">
+    <div class="section-title">Market at a Glance</div>
+    <div class="grid-3" style="margin-top:16px">
+        <div class="card"><div class="stat">$11.5B</div><div class="label">Global Market (2024)</div><p>Projected to reach $23.6B by 2034 at 7.45% CAGR</p></div>
+        <div class="card"><div class="stat">65%</div><div class="label">Collectors aged 18-35</div><p>Millennials and Gen Z driving the hobby resurgence</p></div>
+        <div class="card"><div class="stat">100K+</div><div class="label">r/baseballcards members</div><p>Top 5% of all Reddit communities by activity</p></div>
+    </div>
+    <div class="grid-2" style="margin-top:16px">
+        <div class="card"><div class="stat">60%</div><div class="label">Dual Motivation</div><p>Collect for both nostalgia AND investment — they want the emotional connection but also want to feel smart about their money</p></div>
+        <div class="card"><div class="stat">25-40%</div><div class="label">Break-Driven Spending</div><p>But trending DOWN — searches for "sports card singles" rising while "sports card breaks" declining. Shift back to traditional collecting.</p></div>
+    </div>
+
+    <div style="margin-top:24px">
+        <h3 style="margin-bottom:12px">Seasonal Activity Pattern</h3>
+        <div class="bar-chart">
+            <div class="bar-row"><div class="bar-label">Jan-Feb</div><div class="bar-track"><div class="bar-fill" style="width:25%;background:#3b82f6">Low — Buy season</div></div></div>
+            <div class="bar-row"><div class="bar-label">Mar (Spring Training)</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:#60a5fa">Building — Prospect hype</div></div></div>
+            <div class="bar-row"><div class="bar-label">Apr (Opening Day)</div><div class="bar-track"><div class="bar-fill" style="width:90%;background:#e8530e">PEAK — Max excitement</div></div></div>
+            <div class="bar-row"><div class="bar-label">May-Jul</div><div class="bar-track"><div class="bar-fill" style="width:75%;background:#f97316">High — Callups & breakouts</div></div></div>
+            <div class="bar-row"><div class="bar-label">Aug-Sep</div><div class="bar-track"><div class="bar-fill" style="width:70%;background:#f97316">High — Playoff push</div></div></div>
+            <div class="bar-row"><div class="bar-label">Oct (Postseason)</div><div class="bar-track"><div class="bar-fill" style="width:85%;background:#e8530e">PEAK — Playoff heroes</div></div></div>
+            <div class="bar-row"><div class="bar-label">Nov-Dec</div><div class="bar-track"><div class="bar-fill" style="width:30%;background:#3b82f6">Low — Holiday deals</div></div></div>
+        </div>
+        <p style="font-size:0.8rem;color:#888;margin-top:8px">We're in March right now — the perfect time to build momentum heading into the peak season.</p>
+    </div>
+</div>
+</div>
+
+<!-- PSYCHOLOGY -->
+<div class="tab-content" id="psychology">
+<div class="section">
+    <div class="section-title">The 7 Psychological Drivers of Collectors</div>
+    <p style="color:#aaa;margin:12px 0 20px;font-size:0.9rem">Understanding these is the key to crafting posts that resonate. Each post should tap into at least one of these drivers.</p>
+
+    <div class="driver"><div class="driver-num">1</div><div><h4>Nostalgia (Most Powerful)</h4><p>Saturday mornings at the card shop, trading at recess, saving allowance money. Nostalgia increases feelings of social connectedness and meaning in life. <strong style="color:#e8530e">Content angle:</strong> "Remember when..." framing, vintage references, childhood collecting stories.</p></div></div>
+    <div class="driver"><div class="driver-num">2</div><div><h4>Identity & Mastery</h4><p>Collectors derive identity from what they own. Building complete sets, tracking variants, knowing card values — it's about being an expert. <strong style="color:#e8530e">Content angle:</strong> Share specific knowledge, data, and analysis that makes your audience feel like insiders.</p></div></div>
+    <div class="driver"><div class="driver-num">3</div><div><h4>Order & Control</h4><p>In an uncertain world, collecting provides structure. Organizing, categorizing, and managing a collection gives a sense of control. <strong style="color:#e8530e">Content angle:</strong> The Prospect Card Radar tool directly serves this need — position it as a way to bring order to the chaos of card pricing.</p></div></div>
+    <div class="driver"><div class="driver-num">4</div><div><h4>Financial Investment</h4><p>45% view cards as long-term investment tools. The investment angle provides rational justification for emotional purchases. <strong style="color:#e8530e">Content angle:</strong> Price data, market trends, "undervalued" picks, ROI comparisons.</p></div></div>
+    <div class="driver"><div class="driver-num">5</div><div><h4>Completion Drive</h4><p>The urge to finish a set triggers dopamine. Each acquisition reinforces a positive feedback loop. <strong style="color:#e8530e">Content angle:</strong> Parallel checklists, "how close are you to completing..." posts, tracking tools.</p></div></div>
+    <div class="driver"><div class="driver-num">6</div><div><h4>Social Connection</h4><p>Nearly all convention attendees cite "feeling part of something" as their main reason. The hobby is deeply social. <strong style="color:#e8530e">Content angle:</strong> Ask questions, run polls, create community threads, respond to every comment.</p></div></div>
+    <div class="driver"><div class="driver-num">7</div><div><h4>Escape & Entertainment</h4><p>Cards provide escape from stress while offering entertainment. The hunt itself is the fun. <strong style="color:#e8530e">Content angle:</strong> Share the excitement of finding deals, unexpected discoveries, the thrill of the chase.</p></div></div>
+</div>
+
+<div class="section">
+    <div class="section-title">Pain Points to Address</div>
+    <p style="color:#aaa;margin:12px 0 16px;font-size:0.9rem">These are the frustrations collectors talk about most. Each one is a content opportunity for you.</p>
+    <div class="pain"><h4>Price Volatility & FOMO</h4><p>Hype-driven prices make it hard to know when to buy. Your tool solves this by showing live data instead of guesswork.</p></div>
+    <div class="pain"><h4>Time-Intensive Research</h4><p>Searching eBay manually for every prospect is a grind. This is your core value proposition — you automate this.</p></div>
+    <div class="pain"><h4>Overvalued Cards from the Grading Frenzy</h4><p>Many graded cards from 2020-2022 crashed 95-99%. People are cautious. Position your data as a way to make informed decisions.</p></div>
+    <div class="pain"><h4>Inventory Management</h4><p>Stacks of unsold cards that aren't in demand. Your parallel breakdowns help identify what's actually moving.</p></div>
+</div>
+</div>
+
+<!-- REDDIT -->
+<div class="tab-content" id="reddit">
+<div class="section">
+    <div class="section-title">Reddit Engagement Playbook</div>
+
+    <div class="grid-2" style="margin-top:16px">
+        <div class="card">
+            <h3>What Gets Upvoted</h3>
+            <div class="bar-chart">
+                <div class="bar-row"><div class="bar-label">Pull/Hit Posts</div><div class="bar-track"><div class="bar-fill" style="width:95%;background:#e8530e">Highest</div></div></div>
+                <div class="bar-row"><div class="bar-label">Collection Display</div><div class="bar-track"><div class="bar-fill" style="width:80%;background:#f97316">Very High</div></div></div>
+                <div class="bar-row"><div class="bar-label">Helping Newcomers</div><div class="bar-track"><div class="bar-fill" style="width:70%;background:#fbbf24">High</div></div></div>
+                <div class="bar-row"><div class="bar-label">Data/Analysis</div><div class="bar-track"><div class="bar-fill" style="width:65%;background:#fbbf24">High</div></div></div>
+                <div class="bar-row"><div class="bar-label">Market Discussion</div><div class="bar-track"><div class="bar-fill" style="width:50%;background:#60a5fa">Medium</div></div></div>
+                <div class="bar-row"><div class="bar-label">Self-Promotion</div><div class="bar-track"><div class="bar-fill" style="width:10%;background:#ef4444">Very Low</div></div></div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Rules of Engagement</h3>
+            <p style="margin-bottom:8px"><span class="highlight">90/10 Rule:</span> 90% genuine participation, 10% your content</p>
+            <p style="margin-bottom:8px"><span class="highlight">Early velocity matters:</span> 50 upvotes in 30 min beats 200 in 12 hrs</p>
+            <p style="margin-bottom:8px"><span class="highlight">Always disclose:</span> "I built this" resonates. Hidden promo gets you banned.</p>
+            <p style="margin-bottom:8px"><span class="highlight">Visual first:</span> High-quality card photos are the language of the hobby</p>
+            <p><span class="highlight">Quick hits:</span> Short, visual posts outperform lengthy analysis</p>
+        </div>
+    </div>
+
+    <div style="margin-top:16px">
+        <h3 style="margin-bottom:12px">Target Subreddits</h3>
+        <div class="table-wrap">
+        <table>
+            <tr><th>Subreddit</th><th>Size</th><th>Best Content</th><th>Self-Promo Tolerance</th></tr>
+            <tr><td>r/baseballcards</td><td>100K+</td><td>Pulls, collections, trades, market talk</td><td>Low — must add genuine value</td></tr>
+            <tr><td>r/sportscards</td><td>50K+</td><td>Multi-sport cards, general hobby</td><td>Medium — tools welcomed</td></tr>
+            <tr><td>r/MLBProspects</td><td>Smaller</td><td>Prospect news, minor league</td><td>Higher — niche audience</td></tr>
+            <tr><td>r/fantasybaseball</td><td>100K+</td><td>Player analysis, prospects</td><td>Medium — if data-driven</td></tr>
+            <tr><td>r/topps</td><td>Smaller</td><td>Product-specific discussion</td><td>Low — brand-focused</td></tr>
+        </table>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- TWITTER -->
+<div class="tab-content" id="twitter">
+<div class="section">
+    <div class="section-title">Top Twitter/X Accounts in Baseball Cards</div>
+    <p style="color:#aaa;margin:12px 0 16px;font-size:0.9rem">Accounts ranked by influence and engagement. Study what they post and how they build community.</p>
+
+    <div class="table-wrap">
+    <table>
+        <tr><th>Account</th><th>Tier</th><th>Focus</th><th>What to Learn</th></tr>
+        <tr><td><strong>@CardPurchaser</strong></td><td><span class="tier-badge tier-1">Tier 1</span></td><td>News, restocks, hobby help</td><td>Posts 18 hrs/day, aggregates news, affiliate links, Discord community</td></tr>
+        <tr><td><strong>@SportsCardInv</strong></td><td><span class="tier-badge tier-1">Tier 1</span></td><td>Market analysis, investing</td><td>Data-driven content, Market Movers app — similar to your model</td></tr>
+        <tr><td><strong>@LAcarddude</strong></td><td><span class="tier-badge tier-1">Tier 1</span></td><td>Specialty threads, PSA partner</td><td>Creates 3-4 daily themed threads, community organizing genius</td></tr>
+        <tr><td><strong>@PSAcard</strong></td><td><span class="tier-badge tier-2">Tier 2</span></td><td>Grading, authentication</td><td>Authority positioning, shapes market perception</td></tr>
+        <tr><td><strong>@filthbombbreaks</strong></td><td><span class="tier-badge tier-2">Tier 2</span></td><td>Live breaks</td><td>Real-time excitement, multi-platform presence</td></tr>
+        <tr><td><strong>@Prewarcards</strong></td><td><span class="tier-badge tier-2">Tier 2</span></td><td>Vintage expertise</td><td>Deep niche knowledge = authority. Sunday night sales threads.</td></tr>
+        <tr><td><strong>@PostWarCards</strong></td><td><span class="tier-badge tier-3">Tier 3</span></td><td>Vintage packaging/history</td><td>Educational content that builds following through expertise</td></tr>
+        <tr><td><strong>@SportCardBacks</strong></td><td><span class="tier-badge tier-3">Tier 3</span></td><td>Card back analysis</td><td>Super niche angle — unique perspective builds loyal following</td></tr>
+        <tr><td><strong>@BlowoutBuzz</strong></td><td><span class="tier-badge tier-3">Tier 3</span></td><td>Community, deals</td><td>Marketplace community integration</td></tr>
+        <tr><td><strong>@jnorris427</strong></td><td><span class="tier-badge tier-3">Tier 3</span></td><td>Prospect scouting</td><td>Real-time prospect updates — overlaps your audience perfectly</td></tr>
+    </table>
+    </div>
+
+    <div class="grid-2" style="margin-top:20px">
+        <div class="card">
+            <h3>Content That Drives Engagement on X</h3>
+            <div class="bar-chart">
+                <div class="bar-row"><div class="bar-label">Giveaways</div><div class="bar-track"><div class="bar-fill" style="width:95%;background:#e8530e">34%+ engagement</div></div></div>
+                <div class="bar-row"><div class="bar-label">Pull Highlights</div><div class="bar-track"><div class="bar-fill" style="width:80%;background:#f97316">Visual/viral</div></div></div>
+                <div class="bar-row"><div class="bar-label">Themed Threads</div><div class="bar-track"><div class="bar-fill" style="width:70%;background:#fbbf24">Community builder</div></div></div>
+                <div class="bar-row"><div class="bar-label">Market Analysis</div><div class="bar-track"><div class="bar-fill" style="width:60%;background:#60a5fa">Authority builder</div></div></div>
+                <div class="bar-row"><div class="bar-label">Polls</div><div class="bar-track"><div class="bar-fill" style="width:55%;background:#60a5fa">Interactive</div></div></div>
+                <div class="bar-row"><div class="bar-label">News/Restocks</div><div class="bar-track"><div class="bar-fill" style="width:50%;background:#4ade80">Utility value</div></div></div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Key Insights</h3>
+            <p style="margin-bottom:8px"><span class="highlight">No hashtags needed.</span> Community uses @mentions, RTs, and threads — not hashtags.</p>
+            <p style="margin-bottom:8px"><span class="highlight">Micro > Mega.</span> Nano-tier accounts get ~1% engagement vs mega at 0.1%. Small and engaged beats big and passive.</p>
+            <p style="margin-bottom:8px"><span class="highlight">Text posts outperform</span> other formats at 0.48% engagement rate.</p>
+            <p style="margin-bottom:8px"><span class="highlight">Weekly threads</span> create predictable engagement — LA Card Dude's model is replicable.</p>
+            <p><span class="highlight">Discord integration</span> extends community beyond Twitter and builds loyalty.</p>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- STRATEGY -->
+<div class="tab-content" id="strategy">
+<div class="section">
+    <div class="section-title">Tailored Engagement Strategy for Prospect Card Radar</div>
+    <p style="color:#aaa;margin:12px 0 20px;font-size:0.9rem">Each strategy maps to a specific collector psychology driver. This is your playbook.</p>
+
+    <div class="strategy"><h4>1. "Data Drop" Posts (Drives: Mastery, Investment, Order)</h4><p>Share a single interesting data point from your site each day. Not "check out my tool" — instead: "Interesting — JJ Wetherholt's Bowman Chrome raw avg dropped to $27 while graded are still at $1,645. That's a 61x multiplier. If you're going to grade any prospect card right now, it's him." The data IS the content. The tool link is just how people verify it.</p><div class="when">Best for: Reddit (r/baseballcards), Twitter text posts</div></div>
+
+    <div class="strategy"><h4>2. Weekly "Prospect Price Report" Thread (Drives: Order, Mastery, Community)</h4><p>Every Friday, post a structured thread: Top 5 price risers, Top 5 fallers, most interesting parallel data point, one undervalued pick. Make it a ritual people look forward to. LA Card Dude built his following through scheduled weekly threads — you can do the same with data.</p><div class="when">Best for: Twitter thread (Friday), Reddit post (Saturday morning)</div></div>
+
+    <div class="strategy"><h4>3. "What Would You Do?" Scenarios (Drives: Social Connection, Entertainment)</h4><p>Post scenarios that spark debate: "You have $100 to invest in one prospect's Bowman Chrome auto — who are you picking and why?" or "Raw 1st Bowman of [Prospect X] for $45 or graded PSA 10 for $280 — which play?" These generate massive comment engagement because everyone has an opinion.</p><div class="when">Best for: Reddit, Twitter polls</div></div>
+
+    <div class="strategy"><h4>4. Answer Questions Before They're Asked (Drives: Mastery, Community)</h4><p>Search r/baseballcards for questions like "what's a fair price for..." or "should I grade this..." and respond with data from your site. Don't link unless asked. Just be genuinely helpful. After 5-10 helpful comments, people start recognizing your name and checking your profile — where they find your tool organically.</p><div class="when">Best for: Reddit comments (daily, 5-10 min)</div></div>
+
+    <div class="strategy"><h4>5. Nostalgia + Modern Data Combo (Drives: Nostalgia, Investment)</h4><p>"Remember when a Bowman Chrome 1st auto of a top prospect was a $20 card? Here's what the Top 10 prospects are going for right now." Bridge the emotional pull of nostalgia with the data you have. This framing works because 60% of collectors are motivated by both nostalgia and investment.</p><div class="when">Best for: Reddit long-form, Twitter thread</div></div>
+
+    <div class="strategy"><h4>6. Solve the "Chaos" Problem (Drives: Order, Control)</h4><p>Frame your tool as the antidote to pricing chaos: "I was spending 30 min every night manually searching eBay for prospect prices. Built a tool to automate it. Now I just check one page." This resonates because collectors crave order in a chaotic market — and your tool delivers exactly that.</p><div class="when">Best for: Initial Reddit introduction post, Twitter pinned tweet</div></div>
+
+    <div class="strategy"><h4>7. Monthly Card Giveaway (Drives: Social Connection, Entertainment)</h4><p>Buy a $10-20 prospect card once a month and give it away. Requirement: follow + comment with their favorite prospect. This gets 34%+ engagement on Twitter (vs normal 2-3%). The $15 investment in a card generates more follows and engagement than any amount of content posting. Start small — a raw base Bowman Chrome of a mid-tier prospect.</p><div class="when">Best for: Twitter (monthly), cross-post to Reddit</div></div>
+</div>
+</div>
+
+<!-- CALENDAR -->
+<div class="tab-content" id="calendar">
+<div class="section">
+    <div class="section-title">Weekly Content Calendar</div>
+    <p style="color:#aaa;margin:12px 0 16px;font-size:0.9rem">A repeatable weekly rhythm. Each day targets specific platforms and psychology drivers.</p>
+
+    <div class="cal-grid">
+        <div class="cal-day" style="background:#1a2a1a;border:1px solid #2a4a2a">
+            <div class="day-name" style="color:#4ade80">Mon</div>
+            <div class="day-content"><strong>Data Drop</strong><br>Share one surprising stat from the site<br><br><em style="color:#888">Reddit comment + Tweet</em><br><br><span style="color:#4ade80;font-size:0.6rem">MASTERY + INVESTMENT</span></div>
+        </div>
+        <div class="cal-day" style="background:#1a1a2e;border:1px solid #2a2a4a">
+            <div class="day-name" style="color:#60a5fa">Tue</div>
+            <div class="day-content"><strong>Undervalued Pick</strong><br>Spotlight a prospect whose cards are too cheap<br><br><em style="color:#888">Reddit post + Tweet</em><br><br><span style="color:#60a5fa;font-size:0.6rem">INVESTMENT + MASTERY</span></div>
+        </div>
+        <div class="cal-day" style="background:#2a1a2a;border:1px solid #4a2a4a">
+            <div class="day-name" style="color:#c084fc">Wed</div>
+            <div class="day-content"><strong>Community Q&A</strong><br>Answer 3-5 questions in r/baseballcards<br><br><em style="color:#888">Reddit comments only</em><br><br><span style="color:#c084fc;font-size:0.6rem">SOCIAL + COMMUNITY</span></div>
+        </div>
+        <div class="cal-day" style="background:#1a2a2a;border:1px solid #2a4a4a">
+            <div class="day-name" style="color:#2dd4bf">Thu</div>
+            <div class="day-content"><strong>"What Would You Do?"</strong><br>Post a scenario or poll that sparks debate<br><br><em style="color:#888">Reddit + Twitter poll</em><br><br><span style="color:#2dd4bf;font-size:0.6rem">SOCIAL + ENTERTAINMENT</span></div>
+        </div>
+        <div class="cal-day" style="background:#2a2a1a;border:1px solid #4a4a2a">
+            <div class="day-name" style="color:#fbbf24">Fri</div>
+            <div class="day-content"><strong>Weekly Price Report</strong><br>Top movers, fallers, parallel insight<br><br><em style="color:#888">Twitter thread + Reddit</em><br><br><span style="color:#fbbf24;font-size:0.6rem">ORDER + MASTERY</span></div>
+        </div>
+        <div class="cal-day" style="background:#2a1a1a;border:1px solid #4a2a2a">
+            <div class="day-name" style="color:#f97316">Sat</div>
+            <div class="day-content"><strong>Weekend Watch</strong><br>Prospect to watch this weekend + why<br><br><em style="color:#888">Tweet + Reddit</em><br><br><span style="color:#f97316;font-size:0.6rem">ENTERTAINMENT + ESCAPE</span></div>
+        </div>
+        <div class="cal-day" style="background:#1a1a2a;border:1px solid #2a2a4a">
+            <div class="day-name" style="color:#888">Sun</div>
+            <div class="day-content"><strong>Rest / Prep</strong><br>Engage with replies, prep next week's content<br><br><em style="color:#888">Light engagement only</em><br><br><span style="color:#888;font-size:0.6rem">RECHARGE</span></div>
+        </div>
+    </div>
+
+    <div style="margin-top:24px">
+        <h3 style="margin-bottom:12px">Monthly Milestones</h3>
+        <div class="grid-2">
+            <div class="card"><h3>Week 1-2: Foundation</h3><p>Create Twitter account, pin intro tweet, post daily data drops, answer 3-5 Reddit questions per day. Goal: 50 followers, establish presence.</p></div>
+            <div class="card"><h3>Week 3-4: Rhythm</h3><p>Start weekly price report thread, run first poll/scenario post, engage with top accounts. Goal: 150 followers, first viral data point.</p></div>
+            <div class="card"><h3>Month 2: Growth</h3><p>First card giveaway, start tagging prospect accounts in relevant data, DM 5 collectors to beta test features. Goal: 500 followers.</p></div>
+            <div class="card"><h3>Month 3: Authority</h3><p>Guest on a card podcast (The LA Card Dude Podcast, Sports Card Radio), get retweeted by a Tier 1 account. Goal: 1,000 followers, steady site traffic.</p></div>
+        </div>
+    </div>
+</div>
+</div>
+
+</div>
+
+<script>
+function showTab(id) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
