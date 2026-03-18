@@ -265,12 +265,6 @@
         .show-all-container { text-align: center; margin: 20px 0; }
 
         /* ═══ Card Breakdowns ═══ */
-        .detailed-breakdowns { margin-top: 0; }
-        .breakdowns-header {
-            display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 12px;
-        }
-        .breakdowns-filters { display: flex; gap: 8px; flex-wrap: wrap; }
         .card-filter-select {
             padding: 6px 32px 6px 12px; height: 36px; font-size: 0.8125rem; font-weight: 500;
             background-color: var(--input-fill); color: var(--foreground);
@@ -587,9 +581,6 @@
             .card-body { padding: 10px; }
             .card-name { font-size: 0.8125rem; }
 
-            .detailed-breakdowns { margin-top: 0; }
-            .breakdowns-header { flex-direction: column; align-items: stretch; }
-            .breakdowns-filters { width: 100%; }
             .card-filter-select { flex: 1; min-width: 0; }
         }
 
@@ -1027,7 +1018,12 @@
                     <span class="sb-title">Detailed Card Breakdowns</span>
                     <span class="sb-subtitle">Individual prospect cards with pricing data</span>
                 </div>
-                <div class="breakdowns-filters">
+            </div>
+            <div class="section-body">
+                <div class="controls">
+                    <div class="search-container">
+                        <input type="text" id="cardSearchInput" placeholder="Search by player name..." autocomplete="off">
+                    </div>
                     <select id="cardParallelFilter" class="card-filter-select">
                         <option value="">All Parallels</option>
                         <optgroup label="Standard Refractors">
@@ -1066,8 +1062,6 @@
                         <option value="listings">Sort: Most Listings</option>
                     </select>
                 </div>
-            </div>
-            <div class="section-body">
                 <div id="parallelFilterSummary" class="parallel-filter-summary" style="display:none;"></div>
                 <div class="cards-grid" id="cardsGrid"></div>
                 <div class="show-all-container" id="cardsShowAllContainer" style="display:none;">
@@ -1634,8 +1628,14 @@
 
             const parallelFilter = document.getElementById('cardParallelFilter').value;
             const sortBy = document.getElementById('cardSortBy').value;
+            const cardSearch = (document.getElementById('cardSearchInput').value || '').trim().toLowerCase();
 
             let cards = (filteredProspects.length > 0 ? filteredProspects : prospectsData).slice();
+
+            // Filter by search text
+            if (cardSearch) {
+                cards = cards.filter(p => p.name.toLowerCase().includes(cardSearch));
+            }
 
             // Filter: only show prospects that have the selected parallel
             if (parallelFilter) {
@@ -2105,6 +2105,7 @@
             document.getElementById('cardsShowAllBtn').addEventListener('click', () => { showAllCards = !showAllCards; renderDetailedCards(); });
 
             // Parallel filter & sort dropdowns
+            document.getElementById('cardSearchInput').addEventListener('input', () => { showAllCards = false; renderDetailedCards(); });
             document.getElementById('cardParallelFilter').addEventListener('change', () => { showAllCards = false; renderDetailedCards(); });
             document.getElementById('cardSortBy').addEventListener('change', () => { showAllCards = false; renderDetailedCards(); });
 
