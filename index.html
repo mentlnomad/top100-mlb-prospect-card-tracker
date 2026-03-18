@@ -148,14 +148,6 @@
         }
         .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 2px; line-height: 1.2; }
         .stat-detail { font-size: 0.75rem; color: var(--muted-fg); line-height: 1.3; }
-        .stat-viz { margin-top: 8px; height: 32px; display: flex; align-items: flex-end; gap: 2px; }
-        .stat-bar { border-radius: 2px 2px 0 0; min-width: 4px; transition: height 0.6s ease; }
-        .stat-mini-chart { width: 100%; height: 32px; }
-        .stat-ring { position: relative; width: 40px; height: 40px; margin-top: 4px; }
-        .stat-ring svg { transform: rotate(-90deg); }
-        .stat-ring-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 10px; font-weight: 700; }
-        .stat-meter { height: 6px; background: var(--border); border-radius: 3px; margin-top: 8px; overflow: hidden; }
-        .stat-meter-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
 
         /* ═══ Shared Input Styles ═══ */
         input[type="text"], select {
@@ -427,7 +419,7 @@
         }
         .sb-header:hover { background-color: var(--card-hover); }
         .sb-header-left { display: flex; align-items: center; gap: 8px; }
-        .sb-icon { font-size: 1rem; }
+        .sb-icon { font-size: 1rem; display: flex; align-items: center; color: var(--primary); }
         .sb-title { font-weight: 600; font-size: 0.875rem; color: var(--foreground); }
         .sb-subtitle { font-size: 0.75rem; color: var(--muted-fg); font-weight: 400; margin-left: 6px; }
         .sb-toggle { font-size: 0.875rem; color: var(--muted-fg); transition: transform 0.2s; }
@@ -687,7 +679,6 @@
                 </div>
                 <div class="stat-value" id="activeListing">&mdash;</div>
                 <div class="stat-detail">Across all prospects</div>
-                <div class="stat-viz" id="listingsViz"></div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
@@ -698,7 +689,6 @@
                 </div>
                 <div class="stat-value" id="trendingUpName" style="font-size:1.1rem;color:var(--success);">&mdash;</div>
                 <div class="stat-detail" id="trendingUpDetail"></div>
-                <svg class="stat-mini-chart" id="trendingViz" viewBox="0 0 120 32" preserveAspectRatio="none"></svg>
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
@@ -709,8 +699,6 @@
                 </div>
                 <div class="stat-value" id="gradeFlipName" style="font-size:1.1rem;">&mdash;</div>
                 <div class="stat-detail" id="gradeFlipDetail"></div>
-                <div class="stat-meter"><div class="stat-meter-fill" id="gradeFlipMeter" style="width:0%;background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div></div>
-                <div style="display:flex;justify-content:space-between;margin-top:3px"><span style="font-size:9px;color:#666">Raw</span><span style="font-size:9px;color:#666">Graded</span></div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
@@ -721,7 +709,6 @@
                 </div>
                 <div class="stat-value" id="mostActiveName" style="font-size:1.1rem;">&mdash;</div>
                 <div class="stat-detail" id="mostActiveCount"></div>
-                <div class="stat-viz" id="activeViz"></div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
@@ -732,7 +719,6 @@
                 </div>
                 <div class="stat-value" id="topParallel" style="font-size:1.1rem;">&mdash;</div>
                 <div class="stat-detail" id="topParallelDetail"></div>
-                <div class="stat-viz" id="parallelViz"></div>
             </div>
         </div>
 
@@ -740,7 +726,7 @@
         <div class="search-builder" id="searchBuilder">
             <div class="sb-header" id="sbToggleHeader">
                 <div class="sb-header-left">
-                    <span class="sb-icon">&#x1F50D;</span>
+                    <span class="sb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg></span>
                     <span class="sb-title">Custom Card Search</span>
                     <span class="sb-subtitle">Build a targeted eBay search with filters</span>
                 </div>
@@ -928,7 +914,7 @@
         <div class="section-module">
             <div class="section-header">
                 <div class="section-header-left">
-                    <span class="sb-icon">&#x1F3C6;</span>
+                    <span class="sb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0016.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 01-2.77.853m0 0l.5 3.169m-.5-3.169a6.023 6.023 0 01-2.77-.853"/></svg></span>
                     <span class="sb-title">Top 100 Prospect Rankings</span>
                     <span class="sb-subtitle">Live eBay prices · sortable · searchable</span>
                 </div>
@@ -1531,90 +1517,9 @@
                     topP[1].count + ' listings' + (avgP > 0 ? ' · avg ' + fmt(avgP) : '');
             }
 
-            // ── Dynamic Visualizations ──
-            updateStatVisualizations(all, withHeat, gradeFlips, globalParallels);
         }
 
-        function updateStatVisualizations(all, withHeat, gradeFlips, globalParallels) {
-            // 1. ACTIVE LISTINGS — bar chart of top 10 prospects by listing count
-            const listingsViz = document.getElementById('listingsViz');
-            if (listingsViz) {
-                const top10 = [...all].sort((a,b) => (b.totalListings||0) - (a.totalListings||0)).slice(0,12);
-                const maxL = Math.max(...top10.map(p => p.totalListings || 0), 1);
-                listingsViz.innerHTML = top10.map(p => {
-                    const h = Math.max(4, ((p.totalListings||0)/maxL)*30);
-                    const opacity = 0.4 + ((p.totalListings||0)/maxL)*0.6;
-                    return '<div class="stat-bar" style="height:'+h+'px;flex:1;background:rgba(232,83,14,'+opacity+')" title="'+p.name+': '+(p.totalListings||0)+'"></div>';
-                }).join('');
-            }
-
-            // 2. TRENDING UP — sparkline showing heat scores of top prospects
-            const trendingViz = document.getElementById('trendingViz');
-            if (trendingViz && withHeat && withHeat.length > 2) {
-                const top8 = withHeat.slice(0, 8);
-                const maxH = Math.max(...top8.map(p => p.heat), 1);
-                const pts = top8.map((p, i) => {
-                    const x = (i / (top8.length - 1)) * 118 + 1;
-                    const y = 30 - (p.heat / maxH) * 26;
-                    return x + ',' + y;
-                });
-                const fillPts = '1,30 ' + pts.join(' ') + ' 119,30';
-                trendingViz.innerHTML = '<defs><linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4ade80" stop-opacity="0.3"/><stop offset="100%" stop-color="#4ade80" stop-opacity="0.02"/></linearGradient></defs>'
-                    + '<polygon points="'+fillPts+'" fill="url(#tg)"/>'
-                    + '<polyline points="'+pts.join(' ')+'" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
-                    + top8.map((p, i) => {
-                        const x = (i / (top8.length - 1)) * 118 + 1;
-                        const y = 30 - (p.heat / maxH) * 26;
-                        return '<circle cx="'+x+'" cy="'+y+'" r="2.5" fill="#4ade80" opacity="0.8"><title>'+p.name+': '+p.heat.toFixed(1)+'</title></circle>';
-                    }).join('');
-            }
-
-            // 3. GRADE & FLIP — meter showing the raw-to-graded multiplier
-            const gradeFlipMeter = document.getElementById('gradeFlipMeter');
-            if (gradeFlipMeter && gradeFlips && gradeFlips.length > 0) {
-                const mult = Math.min(gradeFlips[0].multiplier, 20);
-                const pct = Math.min((mult / 20) * 100, 100);
-                setTimeout(function() { gradeFlipMeter.style.width = pct + '%'; }, 100);
-            }
-
-            // 4. MOST ACTIVE — horizontal bars showing top 5 prospects by activity
-            const activeViz = document.getElementById('activeViz');
-            if (activeViz) {
-                const top5 = [...all].sort((a,b) => (b.totalListings||0) - (a.totalListings||0)).slice(0,5);
-                const maxA = Math.max(...top5.map(p => p.totalListings || 0), 1);
-                activeViz.innerHTML = '';
-                activeViz.style.flexDirection = 'column';
-                activeViz.style.gap = '3px';
-                activeViz.style.height = 'auto';
-                top5.forEach(p => {
-                    const pct = ((p.totalListings||0)/maxA)*100;
-                    const bar = document.createElement('div');
-                    bar.style.cssText = 'display:flex;align-items:center;gap:4px;';
-                    bar.innerHTML = '<div style="flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#eab308,#fbbf24);border-radius:2px;transition:width 0.8s ease"></div></div><span style="font-size:8px;color:#888;white-space:nowrap;min-width:20px;text-align:right">'+(p.totalListings||0)+'</span>';
-                    activeViz.appendChild(bar);
-                });
-            }
-
-            // 5. TOP PARALLEL — donut segments showing parallel distribution
-            const parallelViz = document.getElementById('parallelViz');
-            if (parallelViz && globalParallels) {
-                const sorted = Object.entries(globalParallels).sort((a,b) => b[1].count - a[1].count).slice(0,5);
-                const totalP = sorted.reduce((s,e) => s + e[1].count, 0);
-                const colors = ['#c084fc','#a855f7','#8b5cf6','#7c3aed','#6d28d9'];
-                if (totalP > 0) {
-                    parallelViz.innerHTML = '';
-                    parallelViz.style.flexDirection = 'column';
-                    parallelViz.style.gap = '3px';
-                    parallelViz.style.height = 'auto';
-                    sorted.forEach((entry, i) => {
-                        const pct = (entry[1].count / totalP) * 100;
-                        const bar = document.createElement('div');
-                        bar.style.cssText = 'display:flex;align-items:center;gap:4px;';
-                        bar.innerHTML = '<span style="font-size:8px;color:#888;min-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+entry[0]+'</span><div style="flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+colors[i]+';border-radius:2px;transition:width 0.8s ease"></div></div><span style="font-size:8px;color:#888">'+entry[1].count+'</span>';
-                        parallelViz.appendChild(bar);
-                    });
-                }
-            }
+        /* Visualization function removed — keeping stat cards clean */
         }
 
         // ═══════════════════════════════════════════════════════
