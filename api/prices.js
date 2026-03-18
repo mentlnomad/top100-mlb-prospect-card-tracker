@@ -131,6 +131,10 @@ const AFFILIATE_CAMPAIGN = '5339144695';
 let cachedAccessToken = null;
 let tokenExpiresAt = 0;
 
+// In-memory prospect data cache (survives across requests within same serverless instance)
+const prospectCache = {};
+const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours in ms
+
 // ═══════════════════════════════════════════════════════════════════
 // TITLE PARSING ENGINE
 // Extracts structured data from eBay listing titles
@@ -498,94 +502,7 @@ async function searchActive(token, query) {
   }
 }
 
-/**
- * Finding API: Sold/completed listings with full title parsing
- */
-async function searchSold(appId, query) {
-  var url = 'https://svcs.ebay.com/services/search/FindingService/v1'
-    + '?OPERATION-NAME=findCompletedItems'
-    + '&SERVICE-VERSION=1.13.0'
-    + '&SECURITY-APPNAME=' + encodeURIComponent(appId)
-    + '&RESPONSE-DATA-FORMAT=JSON'
-    + '&REST-PAYLOAD'
-    + '&keywords=' + encodeURIComponent(query)
-    + '&categoryId=' + CATEGORY_ID
-    + '&itemFilter(0).name=SoldItemsOnly'
-    + '&itemFilter(0).value=true'
-    + '&sortOrder=StartTimeNewest'
-    + '&paginationInput.entriesPerPage=100';
-
-  try {
-    var res = await fetch(url);
-    var responseText = await res.text();
-
-    if (!res.ok) {
-      console.error('Finding API HTTP ' + res.status);
-      return { items: [], total: 0, debug: 'HTTP ' + res.status };
-    }
-
-    var data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (parseErr) {
-      return { items: [], total: 0, debug: 'JSON parse error' };
-    }
-
-    var response = data.findCompletedItemsResponse;
-    if (!response || !response[0]) {
-      return { items: [], total: 0, debug: 'no response object' };
-    }
-
-    var ack = response[0].ack ? response[0].ack[0] : '';
-    if (ack === 'Failure') {
-      var errMsg = '';
-      if (response[0].errorMessage && response[0].errorMessage[0] && response[0].errorMessage[0].error) {
-        errMsg = response[0].errorMessage[0].error.map(function(e) { return (e.message ? e.message[0] : ''); }).join('; ');
-      }
-      return { items: [], total: 0, debug: 'API failure: ' + errMsg };
-    }
-
-    var searchResult = response[0].searchResult;
-    if (!searchResult || !searchResult[0] || !searchResult[0].item) {
-      var count = searchResult && searchResult[0] ? (searchResult[0]['@count'] || '0') : '0';
-      return { items: [], total: 0, debug: 'no items, count=' + count };
-    }
-
-    var totalEntries = 0;
-    if (response[0].paginationOutput && response[0].paginationOutput[0]) {
-      totalEntries = parseInt(response[0].paginationOutput[0].totalEntries[0]) || 0;
-    }
-
-    var items = searchResult[0].item.map(function(item) {
-      var price = null;
-      if (item.sellingStatus && item.sellingStatus[0] && item.sellingStatus[0].currentPrice) {
-        price = parseFloat(item.sellingStatus[0].currentPrice[0].__value__);
-      }
-      var title = item.title ? item.title[0] : '';
-      var parsed = parseListingTitle(title);
-      var soldDate = null;
-      if (item.listingInfo && item.listingInfo[0] && item.listingInfo[0].endTime) {
-        soldDate = item.listingInfo[0].endTime[0];
-      }
-
-      return {
-        price: price,
-        title: title,
-        graded: isGraded(title),
-        url: item.viewItemURL ? item.viewItemURL[0] : '',
-        image: item.galleryURL ? item.galleryURL[0] : null,
-        soldDate: soldDate,
-        source: 'sold',
-        parsed: parsed,
-      };
-    }).filter(function(i) { return i.price && i.price > 0 && !isJunk(i.title); });
-
-    return { items: items, total: totalEntries, debug: 'ok, items=' + items.length };
-  } catch (e) {
-    console.error('Finding API error:', e.message);
-    return { items: [], total: 0, debug: 'exception: ' + e.message };
-  }
-}
+/* Finding API removed — decommissioned by eBay as of Feb 2025 */
 
 
 // ═══════════════════════════════════════════════════════════════════
@@ -600,68 +517,73 @@ function buildAffiliateUrl(prospectName, searchType) {
     + '&mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=' + campid + '&toolid=10001&mkevt=1';
 }
 
-async function fetchProspectData(prospect, accessToken, clientId) {
+async function fetchProspectData(prospect, accessToken) {
+  // Check in-memory cache first
+  var cached = prospectCache[prospect.key];
+  if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+    console.log(prospect.name + ': serving from cache');
+    return cached.data;
+  }
+
   try {
     var bowmanQuery = prospect.search + ' Bowman auto';
     var proDebutQuery = prospect.search + ' Pro Debut auto';
 
-    var results = await Promise.allSettled([
-      searchActive(accessToken, bowmanQuery),
-      searchSold(clientId, bowmanQuery),
-      searchActive(accessToken, proDebutQuery),
-      searchSold(clientId, proDebutQuery),
-    ]);
+    // Fetch active listings sequentially to avoid rate limits
+    var bowmanActiveRaw, pdActiveRaw;
+    try {
+      bowmanActiveRaw = await searchActive(accessToken, bowmanQuery);
+    } catch (e) {
+      bowmanActiveRaw = { items: [], total: 0, debug: 'exception: ' + e.message };
+    }
 
-    var bowmanActiveRaw = results[0].status === 'fulfilled' ? results[0].value : { items: [], total: 0 };
-    var bowmanSoldRaw = results[1].status === 'fulfilled' ? results[1].value : { items: [], total: 0 };
-    var pdActiveRaw = results[2].status === 'fulfilled' ? results[2].value : { items: [], total: 0 };
-    var pdSoldRaw = results[3].status === 'fulfilled' ? results[3].value : { items: [], total: 0 };
+    // Small delay between calls to respect rate limits
+    await new Promise(function(r) { setTimeout(r, 250); });
+
+    try {
+      pdActiveRaw = await searchActive(accessToken, proDebutQuery);
+    } catch (e) {
+      pdActiveRaw = { items: [], total: 0, debug: 'exception: ' + e.message };
+    }
 
     // Filter to relevant cards
     var bowmanActiveItems = bowmanActiveRaw.items.filter(function(i) { return isRelevantBowman(i.title); });
-    var bowmanSoldItems = bowmanSoldRaw.items.filter(function(i) { return isRelevantBowman(i.title); });
     var pdActiveItems = pdActiveRaw.items.filter(function(i) { return isRelevantProDebut(i.title); });
-    var pdSoldItems = pdSoldRaw.items.filter(function(i) { return isRelevantProDebut(i.title); });
 
     // Aggregate with raw/graded split
     var bowmanActiveSplit = aggregateSplit(bowmanActiveItems);
-    var bowmanSoldSplit = aggregateSplit(bowmanSoldItems);
     var pdActiveSplit = aggregateSplit(pdActiveItems);
-    var pdSoldSplit = aggregateSplit(pdSoldItems);
 
-    // Build distributions from ALL bowman items (active + sold)
-    var allBowmanItems = bowmanActiveItems.concat(bowmanSoldItems);
-    var parallelDist = buildParallelDistribution(allBowmanItems);
-    var gradeDist = buildGradeDistribution(allBowmanItems);
-    var productDist = buildProductDistribution(allBowmanItems);
+    // Build distributions from active bowman items
+    var parallelDist = buildParallelDistribution(bowmanActiveItems);
+    var gradeDist = buildGradeDistribution(bowmanActiveItems);
+    var productDist = buildProductDistribution(bowmanActiveItems);
 
     // Count 1st Bowman items
-    var firstBowmanCount = allBowmanItems.filter(function(i) { return i.parsed && i.parsed.isFirstBowman; }).length;
-    var numberedCount = allBowmanItems.filter(function(i) { return i.parsed && i.parsed.isNumbered; }).length;
+    var firstBowmanCount = bowmanActiveItems.filter(function(i) { return i.parsed && i.parsed.isFirstBowman; }).length;
+    var numberedCount = bowmanActiveItems.filter(function(i) { return i.parsed && i.parsed.isNumbered; }).length;
 
     console.log(prospect.name + ': Bowman active=' + bowmanActiveItems.length +
-      ' sold=' + bowmanSoldItems.length +
       ', PD active=' + pdActiveItems.length +
-      ' sold=' + pdSoldItems.length +
       ', 1st=' + firstBowmanCount +
       ', numbered=' + numberedCount);
 
-    return {
+    var result = {
       key: prospect.key,
       name: prospect.name,
       team: prospect.team,
       bowmanChrome: {
         active: bowmanActiveSplit,
-        sold: bowmanSoldSplit,
+        sold: { all: null, raw: null, graded: null },
         activeTotal: bowmanActiveRaw.total,
-        soldTotal: bowmanSoldRaw.total,
+        soldTotal: 0,
         affiliateUrl: buildAffiliateUrl(prospect.name, 'bowman'),
       },
       proDebut: {
         active: pdActiveSplit,
-        sold: pdSoldSplit,
+        sold: { all: null, raw: null, graded: null },
         activeTotal: pdActiveRaw.total,
-        soldTotal: pdSoldRaw.total,
+        soldTotal: 0,
         affiliateUrl: buildAffiliateUrl(prospect.name, 'prodebut'),
       },
       insights: {
@@ -670,15 +592,19 @@ async function fetchProspectData(prospect, accessToken, clientId) {
         productDistribution: productDist,
         firstBowmanCount: firstBowmanCount,
         numberedCount: numberedCount,
-        totalListings: allBowmanItems.length + pdActiveItems.length + pdSoldItems.length,
+        totalListings: bowmanActiveItems.length + pdActiveItems.length,
       },
       debug: {
-        bowmanActive: bowmanActiveRaw.debug || 'ok, items=' + bowmanActiveItems.length,
-        bowmanSold: bowmanSoldRaw.debug || 'no debug',
-        pdActive: pdActiveRaw.debug || 'ok, items=' + pdActiveItems.length,
-        pdSold: pdSoldRaw.debug || 'no debug',
+        bowmanActive: bowmanActiveRaw.debug || 'ok, items=' + bowmanActiveItems.length + ', raw=' + bowmanActiveRaw.items.length,
+        pdActive: pdActiveRaw.debug || 'ok, items=' + pdActiveItems.length + ', raw=' + pdActiveRaw.items.length,
+        cached: false,
       }
     };
+
+    // Cache the result
+    prospectCache[prospect.key] = { data: result, timestamp: Date.now() };
+
+    return result;
   } catch (error) {
     console.error('Error fetching data for ' + prospect.name + ':', error);
     return {
@@ -707,7 +633,8 @@ async function fetchProspectData(prospect, accessToken, clientId) {
         firstBowmanCount: 0,
         numberedCount: 0,
         totalListings: 0,
-      }
+      },
+      debug: { error: error.message }
     };
   }
 }
@@ -727,26 +654,31 @@ export default async function handler(req, res) {
 
   try {
     var batchNum = parseInt(req.query.batch) || 1;
-    if (batchNum < 1 || batchNum > 10) batchNum = 1;
+    if (batchNum < 1 || batchNum > 20) batchNum = 1;
 
-    var startIdx = (batchNum - 1) * 10;
-    var endIdx = startIdx + 10;
+    // 5 prospects per batch (20 batches total) to stay within rate limits
+    var startIdx = (batchNum - 1) * 5;
+    var endIdx = startIdx + 5;
     var batchProspects = ALL_PROSPECTS.slice(startIdx, endIdx);
 
     var accessToken = await getAccessToken();
-    var clientId = process.env.EBAY_CLIENT_ID;
 
-    var prospects = await Promise.all(
-      batchProspects.map(function(prospect) {
-        return fetchProspectData(prospect, accessToken, clientId);
-      })
-    );
+    // Process prospects sequentially to avoid eBay rate limits
+    var prospects = [];
+    for (var i = 0; i < batchProspects.length; i++) {
+      var result = await fetchProspectData(batchProspects[i], accessToken);
+      prospects.push(result);
+      // 500ms delay between prospects (skipped for cached results)
+      if (i < batchProspects.length - 1) {
+        await new Promise(function(r) { setTimeout(r, 500); });
+      }
+    }
 
     res.status(200).json({
       success: true,
       timestamp: new Date().toISOString(),
       batch: batchNum,
-      totalBatches: 10,
+      totalBatches: 20,
       version: 3,
       prospects: prospects,
     });

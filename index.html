@@ -1761,16 +1761,15 @@
                     processProspectData(b1.prospects);
                 }
 
-                // Fetch remaining batches in background
-                for (let i = 2; i <= 10; i++) {
-                    fetch('/api/prices?batch=' + i)
-                        .then(r => r.json())
-                        .then(data => {
-                            if (data && data.success && data.prospects) {
-                                processProspectData(data.prospects);
-                            }
-                        })
-                        .catch(() => null);
+                // Fetch remaining batches sequentially with delay
+                for (let i = 2; i <= 20; i++) {
+                    await new Promise(r => setTimeout(r, 2000));
+                    try {
+                        const data = await fetch('/api/prices?batch=' + i).then(r => r.json());
+                        if (data && data.success && data.prospects) {
+                            processProspectData(data.prospects);
+                        }
+                    } catch(e) { /* skip failed batch */ }
                 }
 
                 document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
