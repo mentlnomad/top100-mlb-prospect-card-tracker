@@ -625,6 +625,20 @@
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--muted-fg); }
     </style>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XWTLWNHF0G"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XWTLWNHF0G');
+    </script>
+
+    <!-- Vercel Analytics -->
+    <script defer src="/_vercel/insights/script.js"></script>
+    <!-- Vercel Speed Insights (Web Vitals) -->
+    <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
     <div class="container">
@@ -1278,7 +1292,7 @@
                     <td class="price-pd">${fmt(d.pdAvgRaw)}</td>
                     <td style="text-align:center;">${d.totalListings ? d.totalListings.toLocaleString() : '\u2014'}</td>
                     <td class="trend ${trendClass}"><span class="sentiment sentiment-${sent}"></span>${trendText}</td>
-                    <td><a href="${d.affiliateUrl || getEbayLink(p.name)}" target="_blank" rel="noopener noreferrer" class="btn-primary shop-btn">Shop</a></td>
+                    <td><a href="${d.affiliateUrl || getEbayLink(p.name)}" target="_blank" rel="noopener noreferrer" class="btn-primary shop-btn" onclick="if(typeof gtag==='function')gtag('event','shop_click',{prospect:'${p.name}',team:'${p.team}'})">Shop</a></td>
                 `;
                 tbody.appendChild(row);
             });
@@ -1967,6 +1981,7 @@
                 if (price.min > 0) url += '&_udlo=' + price.min;
                 if (price.max < 250000) url += '&_udhi=' + price.max;
                 window.open(url, '_blank');
+                if (typeof gtag === 'function') gtag('event', 'custom_search', { search_term: query, price_min: price.min, price_max: price.max });
             },
 
             clearAll() {
