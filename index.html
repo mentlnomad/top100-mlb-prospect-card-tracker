@@ -265,12 +265,11 @@
         .show-all-container { text-align: center; margin: 20px 0; }
 
         /* ═══ Card Breakdowns ═══ */
-        .detailed-breakdowns { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+        .detailed-breakdowns { margin-top: 0; }
         .breakdowns-header {
             display: flex; justify-content: space-between; align-items: center;
-            flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+            flex-wrap: wrap; gap: 12px;
         }
-        .breakdowns-title { font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 700; margin: 0; color: var(--foreground); letter-spacing: -0.025em; }
         .breakdowns-filters { display: flex; gap: 8px; flex-wrap: wrap; }
         .card-filter-select {
             padding: 6px 32px 6px 12px; height: 36px; font-size: 0.8125rem; font-weight: 500;
@@ -297,9 +296,10 @@
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-bottom: 24px; }
 
         .prospect-card {
-            background-color: var(--card); border: 1px solid var(--border);
+            background-color: #fff; border: 1px solid var(--border);
             border-radius: var(--radius-lg); overflow: hidden; transition: border-color 0.15s, box-shadow 0.2s;
         }
+        [data-theme="dark"] .prospect-card { background-color: var(--background); }
         .prospect-card:hover { border-color: var(--primary); box-shadow: 0 4px 16px rgba(249,115,22,0.08); }
         .card-header {
             padding: 10px 14px;
@@ -587,7 +587,7 @@
             .card-body { padding: 10px; }
             .card-name { font-size: 0.8125rem; }
 
-            .detailed-breakdowns { margin-top: 24px; padding-top: 16px; }
+            .detailed-breakdowns { margin-top: 0; }
             .breakdowns-header { flex-direction: column; align-items: stretch; }
             .breakdowns-filters { width: 100%; }
             .card-filter-select { flex: 1; min-width: 0; }
@@ -1020,9 +1020,13 @@
         </div>
 
         <!-- Detailed Card Breakdowns -->
-        <div class="detailed-breakdowns">
-            <div class="breakdowns-header">
-                <h2 class="breakdowns-title">Detailed Card Breakdowns</h2>
+        <div class="section-module detailed-breakdowns">
+            <div class="section-header">
+                <div class="section-header-left">
+                    <span class="sb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg></span>
+                    <span class="sb-title">Detailed Card Breakdowns</span>
+                    <span class="sb-subtitle">Individual prospect cards with pricing data</span>
+                </div>
                 <div class="breakdowns-filters">
                     <select id="cardParallelFilter" class="card-filter-select">
                         <option value="">All Parallels</option>
@@ -1063,10 +1067,12 @@
                     </select>
                 </div>
             </div>
-            <div id="parallelFilterSummary" class="parallel-filter-summary" style="display:none;"></div>
-            <div class="cards-grid" id="cardsGrid"></div>
-            <div class="show-all-container" id="cardsShowAllContainer" style="display:none;">
-                <button class="btn-slate btn-lg" id="cardsShowAllBtn">Show All 100 Prospects</button>
+            <div class="section-body">
+                <div id="parallelFilterSummary" class="parallel-filter-summary" style="display:none;"></div>
+                <div class="cards-grid" id="cardsGrid"></div>
+                <div class="show-all-container" id="cardsShowAllContainer" style="display:none;">
+                    <button class="btn-slate btn-lg" id="cardsShowAllBtn">Show All 100 Prospects</button>
+                </div>
             </div>
         </div>
     </div>
