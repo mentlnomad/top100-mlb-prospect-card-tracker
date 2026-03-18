@@ -469,8 +469,10 @@ async function searchActive(token, query) {
       }
     );
     if (!res.ok) {
-      console.error('Browse API HTTP ' + res.status);
-      return { items: [], total: 0 };
+      var errBody = '';
+      try { errBody = await res.text(); } catch(e2) {}
+      console.error('Browse API HTTP ' + res.status + ': ' + errBody);
+      return { items: [], total: 0, debug: 'HTTP ' + res.status + ': ' + errBody.substring(0, 200) };
     }
     var data = await res.json();
     return {
@@ -492,7 +494,7 @@ async function searchActive(token, query) {
     };
   } catch (e) {
     console.error('Browse API error:', e.message);
-    return { items: [], total: 0 };
+    return { items: [], total: 0, debug: 'exception: ' + e.message };
   }
 }
 
@@ -671,7 +673,9 @@ async function fetchProspectData(prospect, accessToken, clientId) {
         totalListings: allBowmanItems.length + pdActiveItems.length + pdSoldItems.length,
       },
       debug: {
+        bowmanActive: bowmanActiveRaw.debug || 'ok, items=' + bowmanActiveItems.length,
         bowmanSold: bowmanSoldRaw.debug || 'no debug',
+        pdActive: pdActiveRaw.debug || 'ok, items=' + pdActiveItems.length,
         pdSold: pdSoldRaw.debug || 'no debug',
       }
     };
