@@ -301,7 +301,7 @@
             text-decoration: none; transition: filter 0.15s;
         }
         a.card-header:hover { filter: brightness(1.15); }
-        .card-name { font-weight: 700; font-size: 0.9375rem; color: var(--primary-fg); }
+        .card-name { font-weight: 700; font-size: 0.9375rem; color: var(--primary-fg); flex: 1; }
         .card-pos {
             background-color: rgba(255,255,255,0.2); color: var(--primary-fg); padding: 2px 8px;
             border-radius: var(--radius-sm); font-size: 0.6875rem; font-weight: 600; text-transform: uppercase;
@@ -1032,7 +1032,7 @@
                                 <th class="sortable" data-sort="team">Team</th>
                                 <th class="sortable" data-sort="rawPrice">Asking Raw</th>
                                 <th class="sortable" data-sort="gradedPrice">Asking Graded</th>
-                                <th class="sortable" data-sort="soldPrice">Last Sold</th>
+                                <!-- Last Sold column removed - Finding API deprecated -->
                                 <th class="sortable parallel-col" data-sort="parallelCount" style="display:none;">Parallel #</th>
                                 <th class="sortable parallel-col" data-sort="parallelPrice" style="display:none;">Parallel Avg</th>
                                 <th class="sortable" data-sort="pdPrice">Pro Debut</th>
@@ -1372,7 +1372,6 @@
                     <td class="team">${p.team}</td>
                     <td class="price-raw">${fmt(d.avgRaw)}</td>
                     <td class="price-graded">${fmt(d.avgGraded)}</td>
-                    <td class="price-sold">${fmt(d.soldAvg)}</td>
                     ${parallelCellsHTML}
                     <td class="price-pd">${fmt(d.pdAvgRaw)}</td>
                     <td style="text-align:center;">${d.totalListings ? d.totalListings.toLocaleString() : '\u2014'}</td>
@@ -1798,11 +1797,14 @@
                 const cardLink = d.affiliateUrl || getEbayLink(p.name);
                 const teamColor = getTeamColor(p.team);
                 const teamText = getTeamTextColor(p.team);
+                const mlb = allMlbStats[p.key];
+                const headshotUrl = mlb && mlb.headshot ? mlb.headshot : '';
                 card.innerHTML = `
-                    <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="card-header" style="text-decoration:none;background-color:${teamColor};">
+                    <div class="card-header" style="background-color:${teamColor};cursor:pointer" onclick="openPlayerPage('${p.key}')">
+                        ${headshotUrl ? `<img src="${headshotUrl}" alt="${p.name}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3);margin-right:8px" onerror="this.style.display='none'">` : ''}
                         <div class="card-name" style="color:${teamText}">${p.name}</div>
                         <span class="card-pos" style="color:${teamText};background-color:rgba(${teamText === '#ffffff' ? '255,255,255' : '0,0,0'},0.2)">${p.position}</span>
-                    </a>
+                    </div>
                     <div class="card-team-bar">
                         <span>${p.team} · #${p.rank}</span>
                         <span class="card-live-badge">${liveStr || 'Loading...'}</span>
@@ -1816,13 +1818,6 @@
                                 <div class="pg-box graded-avg"><div class="pg-label">AVG GRADED</div><div class="pg-value">${fmt(d.avgGraded)}</div></div>
                                 <div class="pg-box raw-high"><div class="pg-label">HIGH RAW</div><div class="pg-value">${fmt(d.rawHigh)}</div></div>
                                 <div class="pg-box graded-high"><div class="pg-label">HIGH GRADED</div><div class="pg-value">${fmt(d.gradedHigh)}</div></div>
-                            </div>
-                        </div>
-                        <div class="card-section">
-                            <div class="card-section-title">Last Sold Prices <span class="price-source-tag sold-tag">Completed Sales</span></div>
-                            <div class="price-grid">
-                                <div class="pg-box sold-avg"><div class="pg-label">SOLD RAW</div><div class="pg-value">${fmt(d.soldRawAvg)}</div></div>
-                                <div class="pg-box sold-high"><div class="pg-label">SOLD GRADED</div><div class="pg-value">${fmt(d.soldGradedAvg)}</div></div>
                             </div>
                         </div>
                         ${(d.pdAvgRaw || d.pdAvgGraded) ? `
