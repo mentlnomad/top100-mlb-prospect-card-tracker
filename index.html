@@ -90,9 +90,10 @@
             background-color: var(--background); color: var(--foreground);
             line-height: 1.6; transition: background-color 0.2s, color 0.2s;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 16px; overflow-x: hidden; }
 
         /* ═══ Header ═══ */
         header {
@@ -150,10 +151,10 @@
         .stat-detail { font-size: 0.75rem; color: var(--muted-fg); line-height: 1.3; }
 
         /* ═══ Shared Input Styles ═══ */
-        input[type="text"], select {
+        input[type="text"], select, input[type="number"], textarea {
             width: 100%; padding: 8px 12px; background-color: var(--card);
             border: 1px solid var(--border); border-radius: var(--radius);
-            color: var(--foreground); font-size: 0.875rem; transition: border-color 0.15s, box-shadow 0.15s;
+            color: var(--foreground); font-size: 1rem; transition: border-color 0.15s, box-shadow 0.15s;
             height: 40px;
         }
         input[type="text"]::placeholder { color: var(--muted-fg); }
@@ -269,7 +270,7 @@
 
         /* ═══ Card Breakdowns ═══ */
         .card-filter-select {
-            padding: 6px 32px 6px 12px; height: 36px; font-size: 0.8125rem; font-weight: 500;
+            padding: 6px 32px 6px 12px; height: 36px; font-size: 1rem; font-weight: 500;
             background-color: var(--input-fill); color: var(--foreground);
             border: 1px solid var(--border); border-radius: var(--radius);
             cursor: pointer; appearance: none; -webkit-appearance: none;
@@ -503,9 +504,9 @@
         }
         .sb-price-field input {
             background: transparent; border: none; outline: none;
-            padding: 6px 10px 6px 4px; font-size: 0.8125rem; font-weight: 600;
+            padding: 6px 10px 6px 4px; font-size: 1rem; font-weight: 600;
             color: var(--foreground); width: 100%; font-family: inherit;
-            -moz-appearance: textfield;
+            -moz-appearance: textfield; height: auto;
         }
         .sb-price-field input::-webkit-outer-spin-button,
         .sb-price-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -641,6 +642,9 @@
         @media (max-width: 480px) {
             .container { padding: 8px; }
 
+            .controls { grid-template-columns: 1fr; gap: 8px; }
+            .controls .search-container { grid-column: span 1; }
+
             .dashboard { grid-template-columns: 1fr 1fr; gap: 6px; }
             .stat-card { padding: 10px; }
             .stat-value { font-size: 1rem; }
@@ -663,7 +667,7 @@
             .cards-grid { grid-template-columns: 1fr; gap: 10px; }
             .parallel-filter-summary { gap: 10px; padding: 10px 12px; }
             .pfs-stat { flex: 1; min-width: 70px; }
-            .card-filter-select { font-size: 0.75rem; height: 32px; }
+            .card-filter-select { font-size: 1rem; height: 36px; }
             .price-grid { gap: 4px; }
             .pg-box { padding: 6px; }
             .pg-value { font-size: 0.8125rem; }
