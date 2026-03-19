@@ -169,38 +169,33 @@ export default async function handler(req, res) {
 
     var results = {};
     var lookups = names.length > 0 ? names : keys;
-    var isKeys = keys.length > 0;
 
-    for (var i = 0; i < lookups.length; i++) {
-      var lookup = lookups[i];
+    // Fetch all players in parallel for speed
+    var promises = lookups.map(function(lookup) {
       var cacheKey = lookup.toLowerCase().replace(/\s+/g, '-');
 
-      // Check cache
+      // Check cache first
       if (statsCache[cacheKey] && (Date.now() - statsCache[cacheKey].timestamp) < STATS_CACHE_TTL) {
-        results[cacheKey] = statsCache[cacheKey].data;
-        continue;
+        return Promise.resolve({ key: cacheKey, data: statsCache[cacheKey].data, cached: true });
       }
 
-      // Look up MLB ID by name
-      var mlbId = await lookupPlayerId(lookup);
-      if (!mlbId) {
-        results[cacheKey] = { error: 'Player not found', name: lookup };
-        continue;
-      }
+      // Fetch: look up ID then get data
+      return lookupPlayerId(lookup).then(function(mlbId) {
+        if (!mlbId) return { key: cacheKey, data: { error: 'Player not found', name: lookup } };
+        return fetchPlayerData(mlbId).then(function(data) {
+          if (data) {
+            statsCache[cacheKey] = { data: data, timestamp: Date.now() };
+            return { key: cacheKey, data: data };
+          }
+          return { key: cacheKey, data: { error: 'Failed to fetch stats', mlbId: mlbId } };
+        });
+      }).catch(function(err) {
+        return { key: cacheKey, data: { error: err.message } };
+      });
+    });
 
-      var data = await fetchPlayerData(mlbId);
-      if (data) {
-        statsCache[cacheKey] = { data: data, timestamp: Date.now() };
-        results[cacheKey] = data;
-      } else {
-        results[cacheKey] = { error: 'Failed to fetch stats', mlbId: mlbId };
-      }
-
-      // Small delay between lookups
-      if (i < lookups.length - 1) {
-        await new Promise(function(r) { setTimeout(r, 150); });
-      }
-    }
+    var resolved = await Promise.all(promises);
+    resolved.forEach(function(r) { results[r.key] = r.data; });
 
     return res.status(200).json({
       success: true,

@@ -1882,9 +1882,6 @@
                 }
 
                 document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
-
-                // Fetch MLB stats in background (doesn't block price data)
-                fetchMlbStats();
             } catch (err) {
                 console.error('Failed to fetch:', err);
             }
@@ -1894,8 +1891,8 @@
         // MLB STATS API
         // ═══════════════════════════════════════════════════════
         async function fetchMlbStats() {
-            // Fetch MLB bio/stats in larger batches for speed
-            const batchSize = 20;
+            // Fetch MLB bio/stats in 2 large batches — server now fetches in parallel
+            const batchSize = 50;
             for (let i = 0; i < prospectsData.length; i += batchSize) {
                 const batch = prospectsData.slice(i, i + batchSize);
                 const names = batch.map(p => p.name.replace(/ (Tigers|Marlins|Reds|Phillies|Mariners|Royals|Cardinals|Red Sox|Athletics|Blue Jays|White Sox|Rays|Nationals|Pirates|Dodgers|Brewers|Angels|Yankees)$/i, '')).join(',');
@@ -1911,16 +1908,22 @@
                                 });
                                 if (match) {
                                     allMlbStats[match.key] = val;
-                                    // Update stats bar on existing card without full re-render
-                                    const cardEl = document.querySelector(`[data-prospect-key="${match.key}"] .card-stats-bar`);
-                                    if (!cardEl) {
-                                        // Insert stats bar via DOM update
-                                        const card = document.querySelector(`[data-prospect-key="${match.key}"]`);
-                                        if (card) {
-                                            const teamBar = card.querySelector('.card-team-bar');
-                                            if (teamBar && !teamBar.nextElementSibling?.classList?.contains('card-stats-bar')) {
-                                                teamBar.insertAdjacentHTML('afterend', buildStatsBarHTML(match.key));
-                                            }
+                                    const card = document.querySelector(`[data-prospect-key="${match.key}"]`);
+                                    if (card) {
+                                        // Inject headshot if not already present
+                                        const header = card.querySelector('.card-header');
+                                        if (header && !header.querySelector('img') && val.headshot) {
+                                            const img = document.createElement('img');
+                                            img.src = val.headshot;
+                                            img.alt = match.name;
+                                            img.style.cssText = 'width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3);margin-right:8px';
+                                            img.onerror = function() { this.style.display='none'; };
+                                            header.insertBefore(img, header.firstChild);
+                                        }
+                                        // Inject stats bar if not already present
+                                        const teamBar = card.querySelector('.card-team-bar');
+                                        if (teamBar && !teamBar.nextElementSibling?.classList?.contains('card-stats-bar')) {
+                                            teamBar.insertAdjacentHTML('afterend', buildStatsBarHTML(match.key));
                                         }
                                     }
                                 }
@@ -2370,7 +2373,9 @@
             document.getElementById('cardParallelFilter').addEventListener('change', () => { showAllCards = false; renderDetailedCards(); });
             document.getElementById('cardSortBy').addEventListener('change', () => { showAllCards = false; renderDetailedCards(); });
 
+            // Fetch price data and MLB stats in parallel
             fetchProspectData();
+            fetchMlbStats();
         });
     </script>
 </body>
