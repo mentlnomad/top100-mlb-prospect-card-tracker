@@ -1057,8 +1057,8 @@
                                 <th class="sortable" data-sort="name">Player</th>
                                 <th class="sortable" data-sort="position">Pos</th>
                                 <th class="sortable" data-sort="team">Team</th>
-                                <th class="sortable" data-sort="rawPrice">1st Auto Raw</th>
-                                <th class="sortable" data-sort="gradedPrice">1st Auto Graded</th>
+                                <th class="sortable" data-sort="rawPrice">Asking Raw</th>
+                                <th class="sortable" data-sort="gradedPrice">Asking Graded</th>
                                 <!-- Last Sold column removed - Finding API deprecated -->
                                 <th class="sortable parallel-col" data-sort="parallelCount" style="display:none;">Parallel #</th>
                                 <th class="sortable parallel-col" data-sort="parallelPrice" style="display:none;">Parallel Avg</th>
@@ -1843,7 +1843,7 @@
                     ${buildStatsBarHTML(p.key)}
                     <div class="card-body">
                         <div class="card-section">
-                            <div class="card-section-title">Bowman Chrome 1st Auto <span class="price-source-tag asking-tag">Base</span></div>
+                            <div class="card-section-title">Asking Prices <span class="price-source-tag asking-tag">Live Listings</span></div>
                             <div class="price-grid">
                                 <div class="pg-box raw-avg"><div class="pg-label">AVG RAW</div><div class="pg-value">${fmt(d.avgRaw)}</div></div>
                                 <div class="pg-box graded-avg"><div class="pg-label">AVG GRADED</div><div class="pg-value">${fmt(d.avgGraded)}</div></div>
@@ -1851,14 +1851,6 @@
                                 <div class="pg-box graded-high"><div class="pg-label">HIGH GRADED</div><div class="pg-value">${fmt(d.gradedHigh)}</div></div>
                             </div>
                         </div>
-                        ${(d.pdAvgRaw || d.pdAvgGraded) ? `
-                        <div class="card-section">
-                            <div class="card-section-title">Pro Debut Auto <span class="price-source-tag asking-tag">Base</span></div>
-                            <div class="price-grid">
-                                <div class="pg-box pd-avg"><div class="pg-label">AVG RAW</div><div class="pg-value">${fmt(d.pdAvgRaw)}</div></div>
-                                <div class="pg-box pd-high"><div class="pg-label">AVG GRADED</div><div class="pg-value">${fmt(d.pdAvgGraded)}</div></div>
-                            </div>
-                        </div>` : ''}
                         <div class="card-section">
                             <div class="card-section-title">Parallel Breakdown</div>
                             ${parallelHTML}
