@@ -312,6 +312,25 @@
             background-color: var(--muted); border-bottom: 1px solid var(--border);
         }
         .card-live-badge { font-weight: 600; color: var(--primary); }
+        .card-stats-bar {
+            display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+            font-size: 0.6875rem; color: var(--muted-fg); border-bottom: 1px solid var(--border);
+            background-color: var(--card); flex-wrap: wrap;
+        }
+        .level-badge {
+            display: inline-block; padding: 1px 6px; border-radius: 4px;
+            font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+        }
+        .level-MLB { background: #e8530e; color: #fff; }
+        .level-AAA { background: #8b5cf6; color: #fff; }
+        .level-AA { background: #3b82f6; color: #fff; }
+        .level-Aplus { background: #22c55e; color: #fff; }
+        .level-A { background: #6b7280; color: #fff; }
+        .level-ROK { background: #a3a3a3; color: #fff; }
+        .level-other { background: #444; color: #ccc; }
+        .stat-chip { font-size: 0.65rem; color: var(--foreground); font-weight: 600; }
+        .stat-chip-label { color: var(--muted-fg); font-weight: 400; }
+        .promo-badge { display: inline-flex; align-items: center; gap: 3px; padding: 1px 6px; border-radius: 4px; background: rgba(239,68,68,.12); color: #ef4444; font-size: 0.6rem; font-weight: 700; }
         .card-body { padding: 14px; }
         .card-section { margin-bottom: 14px; }
         .card-section:last-child { margin-bottom: 0; }
@@ -1220,6 +1239,7 @@
         // STATE
         // ═══════════════════════════════════════════════════════
         let allProspectData = {};
+        let allMlbStats = {};
         let currentSort = { field: 'rank', direction: 'asc' };
         let filteredProspects = [...prospectsData];
         let showAllCards = false;
@@ -1750,6 +1770,7 @@
                         <span>${p.team} · #${p.rank}</span>
                         <span class="card-live-badge">${liveStr || 'Loading...'}</span>
                     </div>
+                    ${buildStatsBarHTML(p.key)}
                     <div class="card-body">
                         <div class="card-section">
                             <div class="card-section-title">Asking Prices <span class="price-source-tag asking-tag">Live Listings</span></div>
@@ -1829,9 +1850,83 @@
                 }
 
                 document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+
+                // Fetch MLB stats in background (doesn't block price data)
+                fetchMlbStats();
             } catch (err) {
                 console.error('Failed to fetch:', err);
             }
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // MLB STATS API
+        // ═══════════════════════════════════════════════════════
+        async function fetchMlbStats() {
+            // Fetch MLB bio/stats for all prospects in batches of 10 names
+            const batchSize = 10;
+            for (let i = 0; i < prospectsData.length; i += batchSize) {
+                const batch = prospectsData.slice(i, i + batchSize);
+                const names = batch.map(p => p.name.replace(/ (Tigers|Marlins|Reds|Phillies|Mariners|Royals|Cardinals|Red Sox|Athletics|Blue Jays|White Sox|Rays|Nationals|Pirates|Dodgers|Brewers|Angels|Yankees)$/i, '')).join(',');
+                try {
+                    const res = await fetch('/api/mlb-stats?names=' + encodeURIComponent(names));
+                    const data = await res.json();
+                    if (data.success && data.prospects) {
+                        Object.entries(data.prospects).forEach(([key, val]) => {
+                            if (val && val.bio) {
+                                // Match by name to prospect
+                                const match = prospectsData.find(p => {
+                                    const clean = p.name.replace(/ (Tigers|Marlins|Reds|Phillies|Mariners|Royals|Cardinals|Red Sox|Athletics|Blue Jays|White Sox|Rays|Nationals|Pirates|Dodgers|Brewers|Angels|Yankees)$/i, '').toLowerCase().replace(/\s+/g, '-');
+                                    return clean === key;
+                                });
+                                if (match) {
+                                    allMlbStats[match.key] = val;
+                                }
+                            }
+                        });
+                        // Re-render cards with new stats
+                        renderDetailedCards();
+                        renderTable();
+                    }
+                } catch(e) { console.error('MLB stats batch error:', e); }
+                // Delay between batches
+                if (i + batchSize < prospectsData.length) {
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+        }
+
+        function getLevelClass(level) {
+            if (!level) return 'level-other';
+            if (level === 'MLB') return 'level-MLB';
+            if (level === 'AAA') return 'level-AAA';
+            if (level === 'AA') return 'level-AA';
+            if (level === 'A+') return 'level-Aplus';
+            if (level === 'A' || level === 'A-') return 'level-A';
+            return 'level-other';
+        }
+
+        function buildStatsBarHTML(prospectKey) {
+            const s = allMlbStats[prospectKey];
+            if (!s || !s.bio) return '';
+            const bio = s.bio;
+            const levelClass = getLevelClass(s.level);
+            let statsHTML = '';
+            if (s.hitting && s.hitting.gamesPlayed > 0) {
+                statsHTML = `<span class="stat-chip"><span class="stat-chip-label">AVG</span> ${s.hitting.avg || '—'}</span>` +
+                    `<span class="stat-chip"><span class="stat-chip-label">HR</span> ${s.hitting.hr}</span>` +
+                    `<span class="stat-chip"><span class="stat-chip-label">RBI</span> ${s.hitting.rbi}</span>` +
+                    `<span class="stat-chip"><span class="stat-chip-label">SB</span> ${s.hitting.sb}</span>`;
+            } else if (s.pitching && s.pitching.gamesPlayed > 0) {
+                statsHTML = `<span class="stat-chip"><span class="stat-chip-label">ERA</span> ${s.pitching.era || '—'}</span>` +
+                    `<span class="stat-chip"><span class="stat-chip-label">K</span> ${s.pitching.strikeOuts}</span>` +
+                    `<span class="stat-chip"><span class="stat-chip-label">WHIP</span> ${s.pitching.whip || '—'}</span>`;
+            }
+            return `<div class="card-stats-bar">` +
+                (s.level ? `<span class="level-badge ${levelClass}">${s.level}</span>` : '') +
+                `<span class="stat-chip"><span class="stat-chip-label">Age</span> ${bio.age || '—'}</span>` +
+                `<span class="stat-chip"><span class="stat-chip-label">B/T</span> ${bio.bats || '?'}/${bio.throws || '?'}</span>` +
+                statsHTML +
+                `</div>`;
         }
 
         // ═══════════════════════════════════════════════════════
