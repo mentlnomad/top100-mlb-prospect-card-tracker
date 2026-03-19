@@ -511,41 +511,49 @@
         .sb-price-field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .sb-price-sep { font-size: 0.75rem; color: var(--muted-fg); font-weight: 500; }
         .sb-slider-container {
-            position: relative; height: 36px; margin: 0 9px;
+            position: relative; height: 20px; margin: 8px 0;
         }
+        /* Full-width background track (light gray) */
+        .sb-slider-bg {
+            position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+            height: 6px; border-radius: 9999px; background: var(--border);
+            pointer-events: none;
+        }
+        /* Active range highlight (primary color) */
         .sb-slider-track {
-            position: absolute; height: 4px; border-radius: 2px;
+            position: absolute; height: 6px; border-radius: 9999px;
             background: var(--primary); top: 50%; transform: translateY(-50%);
             pointer-events: none; z-index: 1;
         }
         .sb-range {
-            position: absolute; width: 100%; height: 0;
+            position: absolute; width: 100%; top: 50%; transform: translateY(-50%);
             -webkit-appearance: none; appearance: none;
             background: transparent; pointer-events: none; z-index: 2;
-            top: 50%; margin: 0; padding: 0;
+            height: 6px; margin: 0; padding: 0;
         }
         .sb-range::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
-            width: 18px; height: 18px; border-radius: 50%;
-            background: var(--primary); border: 2px solid var(--background);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            width: 16px; height: 16px; border-radius: 50%;
+            background: var(--background); border: 2px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
             cursor: pointer; pointer-events: all;
-            margin-top: 0;
+            margin-top: -5px;
+        }
+        .sb-range::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 0 4px rgba(232,83,14,0.15);
         }
         .sb-range::-moz-range-thumb {
-            width: 18px; height: 18px; border-radius: 50%;
-            background: var(--primary); border: 2px solid var(--background);
-            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            width: 16px; height: 16px; border-radius: 50%;
+            background: var(--background); border: 2px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
             cursor: pointer; pointer-events: all;
         }
         .sb-range::-webkit-slider-runnable-track {
-            height: 4px; background: var(--border); border-radius: 2px;
+            height: 6px; background: transparent; border-radius: 9999px;
         }
         .sb-range::-moz-range-track {
-            height: 4px; background: var(--border); border-radius: 2px;
+            height: 6px; background: transparent; border-radius: 9999px;
         }
-        .sb-range-min::-webkit-slider-runnable-track { background: transparent; }
-        .sb-range-max::-webkit-slider-runnable-track { background: transparent; }
         .sb-price-labels {
             display: flex; justify-content: space-between;
             font-size: 0.625rem; color: var(--text-muted); margin-top: 2px;
@@ -920,6 +928,7 @@
                         </div>
                     </div>
                     <div class="sb-slider-container">
+                        <div class="sb-slider-bg"></div>
                         <div class="sb-slider-track" id="sbSliderTrack"></div>
                         <input type="range" id="sbRangeMin" class="sb-range sb-range-min" min="0" max="250000" value="0" step="100">
                         <input type="range" id="sbRangeMax" class="sb-range sb-range-max" min="0" max="250000" value="250000" step="100">
