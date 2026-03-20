@@ -144,20 +144,35 @@
             position: relative; overflow: hidden;
         }
         .stat-card:hover { border-color: var(--muted-fg); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .stat-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .stat-icon svg { width: 20px; height: 20px; }
-        .stat-icon-listings { background: rgba(232,83,14,0.12); color: #e8530e; }
-        .stat-icon-trending { background: rgba(74,222,128,0.12); color: #4ade80; }
-        .stat-icon-grade { background: rgba(96,165,250,0.12); color: #60a5fa; }
-        .stat-icon-active { background: rgba(251,191,36,0.12); color: #fbbf24; }
-        .stat-icon-parallel { background: rgba(192,132,252,0.12); color: #c084fc; }
+        .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+        .stat-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .stat-icon svg { width: 16px; height: 16px; }
+        .stat-icon-listings { color: #e8530e; }
+        .stat-icon-trending { color: #4ade80; }
+        .stat-icon-grade { color: #60a5fa; }
+        .stat-icon-active { color: #fbbf24; }
+        .stat-icon-parallel { color: #c084fc; }
         .stat-label {
-            font-size: 0.6875rem; color: var(--muted-fg); text-transform: uppercase;
-            letter-spacing: 0.05em; margin-bottom: 4px; font-weight: 600;
+            font-size: 0.6rem; color: var(--muted-fg); text-transform: uppercase;
+            letter-spacing: 0.06em; margin-bottom: 0; font-weight: 600;
         }
-        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 2px; line-height: 1.2; }
-        .stat-detail { font-size: 0.75rem; color: var(--muted-fg); line-height: 1.3; }
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--primary); margin-bottom: 2px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+        .stat-detail { font-size: 0.7rem; color: var(--muted-fg); line-height: 1.3; }
+
+        /* Live indicator */
+        .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; margin-right: 4px; animation: pulse-dot 2s ease-in-out infinite; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(34,197,94,0); } }
+
+        /* Trending glow */
+        .stat-card-trending .stat-value { animation: trending-glow 3s ease-in-out infinite; }
+        @keyframes trending-glow { 0%, 100% { text-shadow: none; } 50% { text-shadow: 0 0 12px rgba(74,222,128,0.3); } }
+
+        /* Count-up animation handled via JS */
+        .stat-value[data-count] { transition: none; }
+
+        /* Flip multiplier bar */
+        .flip-bar { height: 4px; border-radius: 2px; background: var(--border); margin-top: 6px; overflow: hidden; }
+        .flip-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); width: 0; }
 
         /* ═══ Shared Input Styles ═══ */
         input[type="text"], select, input[type="number"], textarea {
@@ -767,15 +782,15 @@
         <div class="dashboard">
             <div class="stat-card">
                 <div class="stat-card-header">
-                    <div class="stat-label">Active Listings</div>
+                    <div class="stat-label"><span class="live-dot"></span>Active Listings</div>
                     <div class="stat-icon stat-icon-listings">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
                     </div>
                 </div>
-                <div class="stat-value" id="activeListing">&mdash;</div>
+                <div class="stat-value" id="activeListing" data-count="0">&mdash;</div>
                 <div class="stat-detail">Across all prospects</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card stat-card-trending">
                 <div class="stat-card-header">
                     <div class="stat-label">Trending Up</div>
                     <div class="stat-icon stat-icon-trending">
@@ -794,6 +809,7 @@
                 </div>
                 <div class="stat-value" id="gradeFlipName" style="font-size:1.1rem;">&mdash;</div>
                 <div class="stat-detail" id="gradeFlipDetail"></div>
+                <div class="flip-bar"><div class="flip-bar-fill" id="flipBarFill"></div></div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
@@ -1575,13 +1591,34 @@
         // ═══════════════════════════════════════════════════════
         // DASHBOARD
         // ═══════════════════════════════════════════════════════
+        function animateCountUp(elementId, target, duration) {
+            const el = document.getElementById(elementId);
+            if (!el || !target) { if (el) el.textContent = target ? target.toLocaleString() : '\u2014'; return; }
+            duration = duration || 1200;
+            const start = parseInt(el.dataset.count) || 0;
+            const diff = target - start;
+            if (diff === 0) return;
+            const startTime = performance.now();
+            function step(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(start + diff * eased);
+                el.textContent = current.toLocaleString();
+                el.dataset.count = current;
+                if (progress < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
         function updateDashboard() {
             const all = Object.values(allProspectData);
             if (all.length === 0) return;
 
-            // ── Active Listings ──
+            // ── Active Listings (with count-up animation) ──
             const total = all.reduce((s, p) => s + (p.totalListings || 0), 0);
-            document.getElementById('activeListing').textContent = total ? total.toLocaleString() : '\u2014';
+            animateCountUp('activeListing', total);
 
             // ── Most Active ──
             const most = all.reduce((m, p) => (p.totalListings || 0) > (m.totalListings || 0) ? p : m, {});
@@ -1634,6 +1671,9 @@
                 document.getElementById('gradeFlipName').textContent = bestFlip.name;
                 document.getElementById('gradeFlipDetail').textContent =
                     fmt(bestFlip.avgRaw) + ' raw \u2192 ' + fmt(bestFlip.avgGraded) + ' graded (' + bestFlip.multiplier.toFixed(1) + 'x)';
+                // Animate flip bar (cap at 100x for display)
+                const flipPct = Math.min((bestFlip.multiplier / 100) * 100, 100);
+                setTimeout(() => { const bar = document.getElementById('flipBarFill'); if (bar) bar.style.width = flipPct + '%'; }, 200);
             }
 
             // ── Top Parallel ──
