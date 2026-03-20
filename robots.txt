@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://top100-mlb-prospect-card-tracker.vercel.app/sitemap.xml
