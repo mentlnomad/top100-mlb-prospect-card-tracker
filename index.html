@@ -143,7 +143,6 @@
             transition: border-color 0.15s, box-shadow 0.15s;
             position: relative; overflow: hidden;
         }
-        .stat-card:hover { border-color: var(--muted-fg); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .stat-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
         .stat-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .stat-icon svg { width: 16px; height: 16px; }
@@ -163,16 +162,10 @@
         .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; margin-right: 4px; animation: pulse-dot 2s ease-in-out infinite; }
         @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); } 50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(34,197,94,0); } }
 
-        /* Trending glow */
-        .stat-card-trending .stat-value { animation: trending-glow 3s ease-in-out infinite; }
-        @keyframes trending-glow { 0%, 100% { text-shadow: none; } 50% { text-shadow: 0 0 12px rgba(74,222,128,0.3); } }
 
         /* Count-up animation handled via JS */
         .stat-value[data-count] { transition: none; }
 
-        /* Flip multiplier bar */
-        .flip-bar { height: 4px; border-radius: 2px; background: var(--border); margin-top: 6px; overflow: hidden; }
-        .flip-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #3b82f6, #60a5fa); transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); width: 0; }
 
         /* ═══ Shared Input Styles ═══ */
         input[type="text"], select, input[type="number"], textarea {
@@ -809,7 +802,6 @@
                 </div>
                 <div class="stat-value" id="gradeFlipName" style="font-size:1.1rem;">&mdash;</div>
                 <div class="stat-detail" id="gradeFlipDetail"></div>
-                <div class="flip-bar"><div class="flip-bar-fill" id="flipBarFill"></div></div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-header">
@@ -1671,9 +1663,6 @@
                 document.getElementById('gradeFlipName').textContent = bestFlip.name;
                 document.getElementById('gradeFlipDetail').textContent =
                     fmt(bestFlip.avgRaw) + ' raw \u2192 ' + fmt(bestFlip.avgGraded) + ' graded (' + bestFlip.multiplier.toFixed(1) + 'x)';
-                // Animate flip bar (cap at 100x for display)
-                const flipPct = Math.min((bestFlip.multiplier / 100) * 100, 100);
-                setTimeout(() => { const bar = document.getElementById('flipBarFill'); if (bar) bar.style.width = flipPct + '%'; }, 200);
             }
 
             // ── Top Parallel ──
