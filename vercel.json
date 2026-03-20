@@ -1,6 +1,8 @@
 {
   "rewrites": [
-    { "source": "/api/prices", "destination": "/api/prices" }
+    { "source": "/api/prices", "destination": "/api/prices" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/robots.txt", "destination": "/api/robots" }
   ],
   "headers": [
     {
