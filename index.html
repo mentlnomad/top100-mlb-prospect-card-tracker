@@ -693,6 +693,39 @@
         ::-webkit-scrollbar-track { background: var(--card); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--muted-fg); }
+
+        /* ═══ Sticky Nav Tabs ═══ */
+        .section-nav {
+            position: sticky; top: 0; z-index: 50;
+            background: var(--background); border-bottom: 1px solid var(--border);
+            padding: 8px 0; margin-bottom: 12px;
+            display: flex; gap: 4px; overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .section-nav::-webkit-scrollbar { display: none; }
+        .section-nav a {
+            padding: 6px 14px; border-radius: var(--radius); font-size: 0.8125rem;
+            font-weight: 500; color: var(--muted-fg); text-decoration: none;
+            white-space: nowrap; transition: all .15s; border: 1px solid transparent;
+            font-family: 'Outfit', sans-serif;
+        }
+        .section-nav a:hover { color: var(--foreground); background: var(--muted); }
+        .section-nav a.active { color: var(--primary); background: rgba(249,115,22,.08); border-color: rgba(249,115,22,.2); }
+
+        /* ═══ Clickable Card Indicator ═══ */
+        .prospect-card { cursor: pointer; position: relative; }
+        .prospect-card::after {
+            content: 'Tap to view details →';
+            position: absolute; bottom: 0; left: 0; right: 0;
+            text-align: center; font-size: 0.65rem; color: var(--muted-fg);
+            padding: 6px; background: linear-gradient(transparent, var(--card));
+            opacity: 0; transition: opacity .2s; pointer-events: none;
+        }
+        .prospect-card:hover::after { opacity: 1; }
+        @media (max-width: 768px) {
+            .prospect-card::after { opacity: 0.6; }
+        }
     </style>
 
     <!-- Google Analytics -->
@@ -727,7 +760,16 @@
             </button>
         </header>
 
+        <!-- Section Navigation -->
+        <nav class="section-nav" id="sectionNav">
+            <a href="#dashboard" class="active">Dashboard</a>
+            <a href="#rankings">Top 100 Rankings</a>
+            <a href="#search">Card Search</a>
+            <a href="#breakdowns">Card Breakdowns</a>
+        </nav>
+
         <!-- Market Dashboard -->
+        <div id="dashboard"></div>
         <div class="dashboard">
             <div class="stat-card">
                 <div class="stat-card-header">
@@ -781,7 +823,124 @@
             </div>
         </div>
 
+        <!-- Top 100 Rankings Module -->
+        <div id="rankings"></div>
+        <div class="section-module">
+            <div class="section-header">
+                <div class="section-header-left">
+                    <span class="sb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0016.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 01-2.77.853m0 0l.5 3.169m-.5-3.169a6.023 6.023 0 01-2.77-.853"/></svg></span>
+                    <div class="section-header-text">
+                        <h3 class="sb-title">Top 100 Prospect Rankings</h3>
+                        <p class="sb-subtitle">Live eBay prices · sortable · searchable</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="controls">
+                    <div class="search-container sb-autocomplete">
+                        <div class="sb-combo">
+                            <input type="text" id="searchInput" placeholder="Type or select a prospect..." autocomplete="off">
+                            <button type="button" class="sb-combo-toggle" id="tableComboToggle" title="Show all prospects">&#x25BC;</button>
+                        </div>
+                        <div class="sb-suggestions" id="tableSuggestions"></div>
+                    </div>
+                    <select id="tableParallelFilter" class="table-parallel-filter">
+                        <option value="">All Parallels</option>
+                        <optgroup label="Standard Refractors">
+                            <option value="Base">Base</option>
+                            <option value="Refractor">Refractor</option>
+                            <option value="Sky Blue">Sky Blue</option>
+                            <option value="Purple">Purple</option>
+                            <option value="Blue">Blue</option>
+                            <option value="Green">Green</option>
+                            <option value="Gold">Gold</option>
+                            <option value="Orange">Orange</option>
+                            <option value="Red">Red</option>
+                            <option value="Superfractor">Superfractor</option>
+                        </optgroup>
+                        <optgroup label="Pattern Refractors">
+                            <option value="Speckle">Speckle</option>
+                            <option value="Shimmer">Shimmer</option>
+                            <option value="Wave">Wave</option>
+                            <option value="Lava">Lava</option>
+                            <option value="Mojo">Mojo</option>
+                            <option value="Atomic">Atomic</option>
+                        </optgroup>
+                        <optgroup label="Premium">
+                            <option value="Sapphire">Sapphire</option>
+                            <option value="Canary">Canary Diamond</option>
+                            <option value="Rose Gold">Rose Gold</option>
+                            <option value="Printing Plate">Printing Plate</option>
+                        </optgroup>
+                    </select>
+                    <select id="teamFilter">
+                        <option value="">All Teams</option>
+                        <option value="ARI">Arizona Diamondbacks</option>
+                        <option value="ATL">Atlanta Braves</option>
+                        <option value="BAL">Baltimore Orioles</option>
+                        <option value="BOS">Boston Red Sox</option>
+                        <option value="CHC">Chicago Cubs</option>
+                        <option value="CWS">Chicago White Sox</option>
+                        <option value="CIN">Cincinnati Reds</option>
+                        <option value="CLE">Cleveland Guardians</option>
+                        <option value="COL">Colorado Rockies</option>
+                        <option value="DET">Detroit Tigers</option>
+                        <option value="HOU">Houston Astros</option>
+                        <option value="KC">Kansas City Royals</option>
+                        <option value="LAA">Los Angeles Angels</option>
+                        <option value="LAD">Los Angeles Dodgers</option>
+                        <option value="MIA">Miami Marlins</option>
+                        <option value="MIL">Milwaukee Brewers</option>
+                        <option value="MIN">Minnesota Twins</option>
+                        <option value="NYM">New York Mets</option>
+                        <option value="NYY">New York Yankees</option>
+                        <option value="OAK">Oakland Athletics</option>
+                        <option value="PHI">Philadelphia Phillies</option>
+                        <option value="PIT">Pittsburgh Pirates</option>
+                        <option value="SD">San Diego Padres</option>
+                        <option value="SEA">Seattle Mariners</option>
+                        <option value="SF">San Francisco Giants</option>
+                        <option value="STL">St. Louis Cardinals</option>
+                        <option value="TB">Tampa Bay Rays</option>
+                        <option value="TEX">Texas Rangers</option>
+                        <option value="TOR">Toronto Blue Jays</option>
+                        <option value="WSH">Washington Nationals</option>
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <div class="table-scroll">
+                    <table id="prospectsTable">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-sort="rank">#</th>
+                                <th class="sortable" data-sort="name">Player</th>
+                                <th class="sortable" data-sort="position">Pos</th>
+                                <th class="sortable" data-sort="team">Team</th>
+                                <th class="sortable" data-sort="rawPrice">Asking Raw</th>
+                                <th class="sortable" data-sort="gradedPrice">Asking Graded</th>
+                                <!-- Last Sold column removed - Finding API deprecated -->
+                                <th class="sortable parallel-col" data-sort="parallelCount" style="display:none;">Parallel #</th>
+                                <th class="sortable parallel-col" data-sort="parallelPrice" style="display:none;">Parallel Avg</th>
+                                <th class="sortable" data-sort="pdPrice">Pro Debut</th>
+                                <th class="sortable" data-sort="listings">Listings</th>
+                                <th class="sortable" data-sort="trend">Trend</th>
+                                <th>Find Cards</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <div class="show-all-container" id="tableShowAllContainer" style="display:none;">
+                    <button class="btn-slate btn-lg" id="tableShowAllBtn">Show All 100 Prospects</button>
+                </div>
+            </div>
+        </div>
+
         <!-- eBay Search Builder Widget -->
+        <div id="search"></div>
         <div class="search-builder" id="searchBuilder">
             <div class="sb-header" id="sbToggleHeader">
                 <div class="sb-header-left">
@@ -972,118 +1131,8 @@
             </div>
         </div>
 
-        <!-- Top 100 Rankings Module -->
-        <div class="section-module">
-            <div class="section-header">
-                <div class="section-header-left">
-                    <span class="sb-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0016.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 01-2.77.853m0 0l.5 3.169m-.5-3.169a6.023 6.023 0 01-2.77-.853"/></svg></span>
-                    <div class="section-header-text">
-                        <h3 class="sb-title">Top 100 Prospect Rankings</h3>
-                        <p class="sb-subtitle">Live eBay prices · sortable · searchable</p>
-                    </div>
-                </div>
-            </div>
-            <div class="section-body">
-                <div class="controls">
-                    <div class="search-container">
-                        <input type="text" id="searchInput" placeholder="Search by player name..." autocomplete="off">
-                    </div>
-                    <select id="tableParallelFilter" class="table-parallel-filter">
-                        <option value="">All Parallels</option>
-                        <optgroup label="Standard Refractors">
-                            <option value="Base">Base</option>
-                            <option value="Refractor">Refractor</option>
-                            <option value="Sky Blue">Sky Blue</option>
-                            <option value="Purple">Purple</option>
-                            <option value="Blue">Blue</option>
-                            <option value="Green">Green</option>
-                            <option value="Gold">Gold</option>
-                            <option value="Orange">Orange</option>
-                            <option value="Red">Red</option>
-                            <option value="Superfractor">Superfractor</option>
-                        </optgroup>
-                        <optgroup label="Pattern Refractors">
-                            <option value="Speckle">Speckle</option>
-                            <option value="Shimmer">Shimmer</option>
-                            <option value="Wave">Wave</option>
-                            <option value="Lava">Lava</option>
-                            <option value="Mojo">Mojo</option>
-                            <option value="Atomic">Atomic</option>
-                        </optgroup>
-                        <optgroup label="Premium">
-                            <option value="Sapphire">Sapphire</option>
-                            <option value="Canary">Canary Diamond</option>
-                            <option value="Rose Gold">Rose Gold</option>
-                            <option value="Printing Plate">Printing Plate</option>
-                        </optgroup>
-                    </select>
-                    <select id="teamFilter">
-                        <option value="">All Teams</option>
-                        <option value="ARI">Arizona Diamondbacks</option>
-                        <option value="ATL">Atlanta Braves</option>
-                        <option value="BAL">Baltimore Orioles</option>
-                        <option value="BOS">Boston Red Sox</option>
-                        <option value="CHC">Chicago Cubs</option>
-                        <option value="CWS">Chicago White Sox</option>
-                        <option value="CIN">Cincinnati Reds</option>
-                        <option value="CLE">Cleveland Guardians</option>
-                        <option value="COL">Colorado Rockies</option>
-                        <option value="DET">Detroit Tigers</option>
-                        <option value="HOU">Houston Astros</option>
-                        <option value="KC">Kansas City Royals</option>
-                        <option value="LAA">Los Angeles Angels</option>
-                        <option value="LAD">Los Angeles Dodgers</option>
-                        <option value="MIA">Miami Marlins</option>
-                        <option value="MIL">Milwaukee Brewers</option>
-                        <option value="MIN">Minnesota Twins</option>
-                        <option value="NYM">New York Mets</option>
-                        <option value="NYY">New York Yankees</option>
-                        <option value="OAK">Oakland Athletics</option>
-                        <option value="PHI">Philadelphia Phillies</option>
-                        <option value="PIT">Pittsburgh Pirates</option>
-                        <option value="SD">San Diego Padres</option>
-                        <option value="SEA">Seattle Mariners</option>
-                        <option value="SF">San Francisco Giants</option>
-                        <option value="STL">St. Louis Cardinals</option>
-                        <option value="TB">Tampa Bay Rays</option>
-                        <option value="TEX">Texas Rangers</option>
-                        <option value="TOR">Toronto Blue Jays</option>
-                        <option value="WSH">Washington Nationals</option>
-                    </select>
-                </div>
-
-                <div class="table-wrapper">
-                    <div class="table-scroll">
-                    <table id="prospectsTable">
-                        <thead>
-                            <tr>
-                                <th class="sortable" data-sort="rank">#</th>
-                                <th class="sortable" data-sort="name">Player</th>
-                                <th class="sortable" data-sort="position">Pos</th>
-                                <th class="sortable" data-sort="team">Team</th>
-                                <th class="sortable" data-sort="rawPrice">Asking Raw</th>
-                                <th class="sortable" data-sort="gradedPrice">Asking Graded</th>
-                                <!-- Last Sold column removed - Finding API deprecated -->
-                                <th class="sortable parallel-col" data-sort="parallelCount" style="display:none;">Parallel #</th>
-                                <th class="sortable parallel-col" data-sort="parallelPrice" style="display:none;">Parallel Avg</th>
-                                <th class="sortable" data-sort="pdPrice">Pro Debut</th>
-                                <th class="sortable" data-sort="listings">Listings</th>
-                                <th class="sortable" data-sort="trend">Trend</th>
-                                <th>Shop</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
-                    </div>
-                </div>
-
-                <div class="show-all-container" id="tableShowAllContainer" style="display:none;">
-                    <button class="btn-slate btn-lg" id="tableShowAllBtn">Show All 100 Prospects</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Detailed Card Breakdowns -->
+        <div id="breakdowns"></div>
         <div class="section-module detailed-breakdowns">
             <div class="section-header">
                 <div class="section-header-left">
@@ -1096,8 +1145,12 @@
             </div>
             <div class="section-body">
                 <div class="controls">
-                    <div class="search-container">
-                        <input type="text" id="cardSearchInput" placeholder="Search by player name..." autocomplete="off">
+                    <div class="search-container sb-autocomplete">
+                        <div class="sb-combo">
+                            <input type="text" id="cardSearchInput" placeholder="Type or select a prospect..." autocomplete="off">
+                            <button type="button" class="sb-combo-toggle" id="cardComboToggle" title="Show all prospects">&#x25BC;</button>
+                        </div>
+                        <div class="sb-suggestions" id="cardSuggestions"></div>
                     </div>
                     <select id="cardParallelFilter" class="card-filter-select">
                         <option value="">All Parallels</option>
@@ -1417,7 +1470,7 @@
                     <td class="price-pd">${fmt(d.pdAvgRaw)}</td>
                     <td style="text-align:center;">${d.totalListings ? d.totalListings.toLocaleString() : '\u2014'}</td>
                     <td class="trend ${trendClass}"><span class="sentiment sentiment-${sent}"></span>${trendText}</td>
-                    <td><a href="${d.affiliateUrl || getEbayLink(p.name)}" target="_blank" rel="noopener noreferrer" class="btn-primary shop-btn" onclick="if(typeof gtag==='function')gtag('event','shop_click',{prospect:'${p.name}',team:'${p.team}'})">Shop</a></td>
+                    <td><a href="${d.affiliateUrl || getEbayLink(p.name)}" target="_blank" rel="noopener noreferrer" class="btn-primary shop-btn" onclick="if(typeof gtag==='function')gtag('event','shop_click',{prospect:'${p.name}',team:'${p.team}'})">Find Cards</a></td>
                 `;
                 tbody.appendChild(row);
             });
@@ -1875,7 +1928,7 @@
                             ${thumbHTML}
                         </div>
                         <div style="padding-top:12px;border-top:1px solid var(--border);margin-top:12px;">
-                            <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width:100%;text-decoration:none;">Shop ${p.name} on eBay</a>
+                            <a href="${cardLink}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width:100%;text-decoration:none;">Find ${p.name} Cards on eBay</a>
                         </div>
                     </div>
                 `;
@@ -2111,7 +2164,7 @@
                 </div>` : ''}
 
                 <div class="player-actions">
-                    <a href="${affiliateUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary" onclick="if(typeof gtag==='function')gtag('event','shop_click',{prospect:'${p.name}',team:'${p.team}',source:'player_page'})">Shop on eBay</a>
+                    <a href="${affiliateUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary" onclick="if(typeof gtag==='function')gtag('event','shop_click',{prospect:'${p.name}',team:'${p.team}',source:'player_page'})">Find Cards on eBay</a>
                 </div>
             `;
 
@@ -2394,6 +2447,91 @@
         };
 
         // ═══════════════════════════════════════════════════════
+        // COMBOBOX FACTORY
+        // ═══════════════════════════════════════════════════════
+        function initCombobox(inputId, toggleId, suggestionsId, onSelect) {
+            const input = document.getElementById(inputId);
+            const toggle = document.getElementById(toggleId);
+            const box = document.getElementById(suggestionsId);
+            if (!input || !toggle || !box) return;
+
+            function renderSuggestions(filter) {
+                box.innerHTML = '';
+                const term = (filter || '').toLowerCase();
+                const matches = term ? prospectsData.filter(p => p.name.toLowerCase().includes(term)) : prospectsData;
+                if (matches.length === 0) {
+                    box.innerHTML = '<div style="padding:10px 12px;font-size:0.8rem;color:var(--muted-fg)">No matches found</div>';
+                    box.classList.add('visible');
+                    return;
+                }
+                matches.forEach(function(p) {
+                    const div = document.createElement('div');
+                    div.style.cssText = 'padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;border-bottom:1px solid var(--border);transition:background .1s';
+                    div.innerHTML = '<span><strong>#' + p.rank + '</strong> ' + p.name + '</span><span style="font-size:0.7rem;color:var(--muted-fg)">' + p.team + ' · ' + p.position + '</span>';
+                    div.addEventListener('mouseenter', function() { this.style.background = 'var(--muted)'; });
+                    div.addEventListener('mouseleave', function() { this.style.background = ''; });
+                    div.addEventListener('click', function() {
+                        input.value = p.name;
+                        box.classList.remove('visible');
+                        toggle.classList.remove('open');
+                        onSelect(p.name);
+                    });
+                    box.appendChild(div);
+                });
+                box.classList.add('visible');
+            }
+
+            // Toggle dropdown
+            toggle.addEventListener('click', function() {
+                const isOpen = box.classList.contains('visible');
+                if (isOpen) {
+                    box.classList.remove('visible');
+                    this.classList.remove('open');
+                } else {
+                    renderSuggestions(input.value);
+                    this.classList.add('open');
+                }
+            });
+
+            // Type to filter
+            input.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    renderSuggestions(this.value);
+                } else {
+                    box.classList.remove('visible');
+                    toggle.classList.remove('open');
+                    onSelect('');
+                }
+            });
+
+            // Focus shows suggestions
+            input.addEventListener('focus', function() {
+                if (this.value.length > 0) renderSuggestions(this.value);
+            });
+
+            // Enter key selects first match
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    box.classList.remove('visible');
+                    toggle.classList.remove('open');
+                    onSelect(this.value);
+                }
+                if (e.key === 'Escape') {
+                    box.classList.remove('visible');
+                    toggle.classList.remove('open');
+                }
+            });
+
+            // Click outside closes
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !toggle.contains(e.target) && !box.contains(e.target)) {
+                    box.classList.remove('visible');
+                    toggle.classList.remove('open');
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════
         // INIT
         // ═══════════════════════════════════════════════════════
         document.addEventListener('DOMContentLoaded', () => {
@@ -2410,9 +2548,49 @@
             document.getElementById('cardParallelFilter').addEventListener('change', () => { showAllCards = false; renderDetailedCards(); });
             document.getElementById('cardSortBy').addEventListener('change', () => { showAllCards = false; renderDetailedCards(); });
 
+            // ── Combobox for Table search ──
+            initCombobox('searchInput', 'tableComboToggle', 'tableSuggestions', function(name) {
+                document.getElementById('searchInput').value = name;
+                applyFilters();
+            });
+
+            // ── Combobox for Card Breakdowns search ──
+            initCombobox('cardSearchInput', 'cardComboToggle', 'cardSuggestions', function(name) {
+                document.getElementById('cardSearchInput').value = name;
+                showAllCards = false;
+                renderDetailedCards();
+            });
+
             // Fetch price data and MLB stats in parallel
             fetchProspectData();
             fetchMlbStats();
+
+            // Nav tabs: smooth scroll + active state
+            const navLinks = document.querySelectorAll('.section-nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        navLinks.forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+
+            // Scroll spy: highlight active nav tab based on scroll position
+            const sections = ['dashboard', 'rankings', 'search', 'breakdowns'];
+            window.addEventListener('scroll', () => {
+                let current = 'dashboard';
+                sections.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && el.getBoundingClientRect().top <= 80) current = id;
+                });
+                navLinks.forEach(l => {
+                    l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+                });
+            }, { passive: true });
         });
     </script>
 </body>
