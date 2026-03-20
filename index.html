@@ -714,18 +714,12 @@
         .section-nav a.active { color: var(--primary); background: rgba(249,115,22,.08); border-color: rgba(249,115,22,.2); }
 
         /* ═══ Clickable Card Indicator ═══ */
-        .prospect-card { cursor: pointer; position: relative; }
-        .prospect-card::after {
-            content: 'Tap to view details →';
-            position: absolute; bottom: 0; left: 0; right: 0;
-            text-align: center; font-size: 0.65rem; color: var(--muted-fg);
-            padding: 6px; background: linear-gradient(transparent, var(--card));
-            opacity: 0; transition: opacity .2s; pointer-events: none;
+        .prospect-card { cursor: pointer; }
+        .card-header .card-chevron {
+            display: flex; align-items: center; margin-left: auto; padding-left: 8px;
+            opacity: 0.5; transition: opacity .15s;
         }
-        .prospect-card:hover::after { opacity: 1; }
-        @media (max-width: 768px) {
-            .prospect-card::after { opacity: 0.6; }
-        }
+        .prospect-card:hover .card-chevron { opacity: 1; }
     </style>
 
     <!-- Google Analytics -->
@@ -1900,6 +1894,7 @@
                         ${headshotUrl ? `<img src="${headshotUrl}" alt="${p.name}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3);margin-right:8px" onerror="this.style.display='none'">` : ''}
                         <div class="card-name" style="color:${teamText}">${p.name}</div>
                         <span class="card-pos" style="color:${teamText};background-color:rgba(${teamText === '#ffffff' ? '255,255,255' : '0,0,0'},0.2)">${p.position}</span>
+                        <span class="card-chevron"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${teamText}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
                     </div>
                     <div class="card-team-bar">
                         <span>${p.team} · #${p.rank}</span>
