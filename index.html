@@ -1093,27 +1093,27 @@
                     <div class="sb-price-inputs">
                         <div class="sb-price-field">
                             <span class="sb-price-currency">$</span>
-                            <input type="number" id="sbPriceMin" value="0" min="0" max="250000" step="1">
+                            <input type="number" id="sbPriceMin" value="0" min="0" max="100000" step="1">
                         </div>
                         <span class="sb-price-sep">to</span>
                         <div class="sb-price-field">
                             <span class="sb-price-currency">$</span>
-                            <input type="number" id="sbPriceMax" value="250000" min="0" max="250000" step="1">
+                            <input type="number" id="sbPriceMax" value="100000" min="0" max="100000" step="1">
                         </div>
                     </div>
                     <div class="sb-slider-container">
                         <div class="sb-slider-bg"></div>
                         <div class="sb-slider-track" id="sbSliderTrack"></div>
-                        <input type="range" id="sbRangeMin" class="sb-range sb-range-min" min="0" max="250000" value="0" step="100">
-                        <input type="range" id="sbRangeMax" class="sb-range sb-range-max" min="0" max="250000" value="250000" step="100">
+                        <input type="range" id="sbRangeMin" class="sb-range sb-range-min" min="0" max="100000" value="0" step="100">
+                        <input type="range" id="sbRangeMax" class="sb-range sb-range-max" min="0" max="100000" value="100000" step="100">
                     </div>
                     <div class="sb-price-labels">
                         <span>$0</span>
-                        <span>$50k</span>
+                        <span>$20k</span>
+                        <span>$40k</span>
+                        <span>$60k</span>
+                        <span>$80k</span>
                         <span>$100k</span>
-                        <span>$150k</span>
-                        <span>$200k</span>
-                        <span>$250k</span>
                     </div>
                 </div>
 
@@ -2256,14 +2256,14 @@
                 });
                 this.els.priceMin.addEventListener('input', () => {
                     let val = parseInt(this.els.priceMin.value) || 0;
-                    val = Math.max(0, Math.min(val, 250000));
+                    val = Math.max(0, Math.min(val, 100000));
                     this.els.rangeMin.value = val;
                     this.updateSliderTrack();
                     updatePreview();
                 });
                 this.els.priceMax.addEventListener('input', () => {
-                    let val = parseInt(this.els.priceMax.value) || 250000;
-                    val = Math.max(0, Math.min(val, 250000));
+                    let val = parseInt(this.els.priceMax.value) || 100000;
+                    val = Math.max(0, Math.min(val, 100000));
                     this.els.rangeMax.value = val;
                     this.updateSliderTrack();
                     updatePreview();
@@ -2311,16 +2311,16 @@
             updateSliderTrack() {
                 const min = parseInt(this.els.rangeMin.value);
                 const max = parseInt(this.els.rangeMax.value);
-                const pctMin = (min / 250000) * 100;
-                const pctMax = (max / 250000) * 100;
+                const pctMin = (min / 100000) * 100;
+                const pctMax = (max / 100000) * 100;
                 this.els.sliderTrack.style.left = pctMin + '%';
                 this.els.sliderTrack.style.right = (100 - pctMax) + '%';
             },
 
             getPriceRange() {
                 const min = parseInt(this.els.priceMin.value) || 0;
-                const max = parseInt(this.els.priceMax.value) || 250000;
-                return { min, max, hasFilter: min > 0 || max < 250000 };
+                const max = parseInt(this.els.priceMax.value) || 100000;
+                return { min, max, hasFilter: min > 0 || max < 100000 };
             },
 
             buildQuery() {
@@ -2356,7 +2356,7 @@
                 if (price.hasFilter) {
                     const fmtMin = price.min.toLocaleString();
                     const fmtMax = price.max.toLocaleString();
-                    if (price.min > 0 && price.max < 250000) text += `  ·  $${fmtMin} – $${fmtMax}`;
+                    if (price.min > 0 && price.max < 100000) text += `  ·  $${fmtMin} – $${fmtMax}`;
                     else if (price.min > 0) text += `  ·  $${fmtMin}+`;
                     else text += `  ·  up to $${fmtMax}`;
                 }
@@ -2375,7 +2375,7 @@
                     + '&mkcid=1&mkrid=711-53200-19255-0&siteid=0&campid=' + CAMPAIGN_ID
                     + '&toolid=10001&mkevt=1';
                 if (price.min > 0) url += '&_udlo=' + price.min;
-                if (price.max < 250000) url += '&_udhi=' + price.max;
+                if (price.max < 100000) url += '&_udhi=' + price.max;
                 window.open(url, '_blank');
                 if (typeof gtag === 'function') gtag('event', 'custom_search', { search_term: query, price_min: price.min, price_max: price.max });
             },
@@ -2392,9 +2392,9 @@
                 this.els.chrome.checked = false;
                 this.els.sp.checked = false;
                 this.els.priceMin.value = 0;
-                this.els.priceMax.value = 250000;
+                this.els.priceMax.value = 100000;
                 this.els.rangeMin.value = 0;
-                this.els.rangeMax.value = 250000;
+                this.els.rangeMax.value = 100000;
                 this.updateSliderTrack();
                 this.els.suggestions.classList.remove('visible');
                 this.updatePreview();
