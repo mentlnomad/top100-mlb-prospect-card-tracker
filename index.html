@@ -1623,52 +1623,37 @@
         }
 
         // ── MLB Headshot helper ──
-        const _headshotCache = {}; // playerName → url | 'none'
-        function _showInitials(containerEl, name) {
-            const initials = name.replace(/ (Tigers|Marlins|Royals|Mariners|Reds|Phillies|Red Sox|Dodgers|Cardinals|Brewers|Pirates|Athletics|Blue Jays|Nationals|Padres|Rangers|Giants|Twins|Guardians|Cubs|Orioles|Rays|Rockies|Braves|Astros|Angels|Diamondbacks|White Sox|Yankees|Mets)$/i, '')
+        const _headshotCache = {}; // playerName → playerId | 'none'
+        function _getInitials(name) {
+            return name.replace(/ (Tigers|Marlins|Royals|Mariners|Reds|Phillies|Red Sox|Dodgers|Cardinals|Brewers|Pirates|Athletics|Blue Jays|Nationals|Padres|Rangers|Giants|Twins|Guardians|Cubs|Orioles|Rays|Rockies|Braves|Astros|Angels|Diamondbacks|White Sox|Yankees|Mets)$/i, '')
                 .split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-            containerEl.innerHTML = `<span style="font-size:0.875rem;font-weight:700;color:var(--muted-fg)">${initials}</span>`;
+        }
+        function _showInitials(el, name) {
+            el.innerHTML = '<span style="font-size:0.875rem;font-weight:700;color:var(--muted-fg)">' + _getInitials(name) + '</span>';
+        }
+        function _insertHeadshot(el, playerId, playerName) {
+            const url = 'https://midfield.mlbstatic.com/v1/people/' + playerId + '/spots/120';
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = '';
+            img.onerror = function() { _showInitials(el, playerName); _headshotCache[playerName] = 'none'; };
+            el.innerHTML = '';
+            el.appendChild(img);
         }
         async function setPlayerHeadshot(containerEl, playerName) {
             if (!containerEl || !playerName) return;
-            // Show initials immediately as placeholder
             _showInitials(containerEl, playerName);
-            // If cached as 'none', keep initials
             if (_headshotCache[playerName] === 'none') return;
-            // If cached URL, swap in
-            if (_headshotCache[playerName]) {
-                containerEl.innerHTML = `<img src="${_headshotCache[playerName]}" alt="">`;
-                return;
-            }
+            if (_headshotCache[playerName]) { _insertHeadshot(containerEl, _headshotCache[playerName], playerName); return; }
             try {
                 const cleanName = playerName.replace(/ (Tigers|Marlins|Royals|Mariners|Reds|Phillies|Red Sox|Dodgers|Cardinals|Brewers|Pirates|Athletics|Blue Jays|Nationals|Padres|Rangers|Giants|Twins|Guardians|Cubs|Orioles|Rays|Rockies|Braves|Astros|Angels|Diamondbacks|White Sox|Yankees|Mets)$/i, '');
-                const resp = await fetch(`https://statsapi.mlb.com/api/v1/people/search?names=${encodeURIComponent(cleanName)}&limit=1`);
+                const resp = await fetch('https://statsapi.mlb.com/api/v1/people/search?names=' + encodeURIComponent(cleanName) + '&limit=1');
                 const data = await resp.json();
                 if (data.people && data.people.length > 0) {
-                    const playerId = data.people[0].id;
-                    const url = `https://img.mlb.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_213,q_auto:best/v1/people/${playerId}/headshot/67/current`;
-                    // Pre-load the image before inserting
-                    const img = new Image();
-                    img.onload = () => {
-                        // Generic placeholder is ~4KB; real photos are larger
-                        // Also check if it's a very small image (likely silhouette)
-                        _headshotCache[playerName] = url;
-                        containerEl.innerHTML = '';
-                        const imgEl = document.createElement('img');
-                        imgEl.src = url;
-                        imgEl.alt = '';
-                        containerEl.appendChild(imgEl);
-                    };
-                    img.onerror = () => {
-                        _headshotCache[playerName] = 'none';
-                    };
-                    img.src = url;
-                } else {
-                    _headshotCache[playerName] = 'none';
-                }
-            } catch (e) {
-                _headshotCache[playerName] = 'none';
-            }
+                    _headshotCache[playerName] = data.people[0].id;
+                    _insertHeadshot(containerEl, data.people[0].id, playerName);
+                } else { _headshotCache[playerName] = 'none'; }
+            } catch (e) { _headshotCache[playerName] = 'none'; }
         }
 
         function updateDashboard() {
